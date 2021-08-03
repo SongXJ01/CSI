@@ -1,13 +1,13 @@
 <template>
-	<view>
-		<!-- 空白行 -->
-		<!-- <view class='cu-tabbar-height'></view> -->
+	<view class="bg-white">
 		<!-- 滑动验证模态框 -->
 		<view class="cu-modal" :class="modalName=='ModalVerify'?'show':''">
 			<view class="cu-dialog bg-white padding">
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
+		
+		<!-- 顶部图片 -->
 		<view class="UCenter-bg">
 			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
 			<view class="margin-top-sm">
@@ -17,8 +17,8 @@
 		</view>
 
 
-		<view class="padding margin-top-xl">
-			<view class="padding bg-white" style="border-radius: 30rpx;">
+		<view class="padding margin-top-xl ">
+			<view class="padding myBorder">
 				<view class="text-bold text-center text-xl margin-top">注 册</view>
 				<view class="content margin">
 					<u-input class="margin" v-model="loginname" placeholder="请输入用户名" type="text" :border="border" />
@@ -32,7 +32,7 @@
 					<u-input class="margin" v-model="psd1" placeholder="请输入密码" type='password' :border="border" />
 					<u-input class="margin" v-model="psd2" placeholder="请再次输入密码" type='password' :border="border" />
 					<view class="u-config-item">
-						<view class="text-bold text-lg margin">选择身份：</view>
+						<view class="text-bold text margin">选择身份：</view>
 						<u-subsection :current="status" :list="['普通用户','管理员']" @change="identityChange">
 						</u-subsection>
 					</view>
@@ -206,56 +206,6 @@
 	};
 </script>
 
-<style lang="scss" scoped>
-	.wrap {
-		font-size: 28rpx;
-
-		.content {
-			width: 600rpx;
-			margin: 80rpx auto 0;
-
-		}
-	}
-
-	.hyperlink {
-		text-decoration: underline;
-		color: #0081FF;
-	}
-
-	.UCenter-bg {
-		background-image: url(https://cos.51shashu.com/img/myBackground.jpg);
-		background-size: cover;
-		height: 550rpx;
-		display: flex;
-		justify-content: center;
-		padding-top: 40rpx;
-		overflow: hidden;
-		position: relative;
-		flex-direction: column;
-		align-items: center;
-		color: #fff;
-		font-weight: 300;
-		text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-	}
-
-	.UCenter-bg text {
-		opacity: 0.8;
-	}
-
-	.UCenter-bg image {
-		width: 400rpx;
-		height: 300rpx;
-	}
-
-	.UCenter-bg .gif-wave {
-		position: absolute;
-		width: 100%;
-		bottom: 0;
-		left: 0;
-		z-index: 99;
-		mix-blend-mode: screen;
-		height: 100rpx;
-	}
-
+<style>
 	
 </style>

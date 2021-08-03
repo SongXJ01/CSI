@@ -1,7 +1,5 @@
 <template>
-	<view>
-		<!-- 空白行 -->
-		<view class='cu-tabbar-height'></view>
+	<view class="bg-white">
 		<!-- 滑动验证模态框 -->
 		<view class="cu-modal" :class="modalName=='ModalVerify'?'show':''">
 			<view class="cu-dialog bg-white padding">
@@ -9,19 +7,23 @@
 			</view>
 		</view>
 
-
-		<view class="padding text-center margin-top">
-			<image src="/static/Logo.png" mode='widthFix'></image>
+		<!-- 顶部图片 -->
+		<view class="UCenter-bg">
+			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
+			<view class="margin-top-sm">
+				<text>V 1.0.0</text>
+			</view>
+			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
 		<view class="padding margin-top-xl">
-			<view class="padding bg-white" style="border-radius: 30rpx;">
+			<view class="padding myBorder">
 				<view class="text-bold text-center text-xl margin-top">登 录</view>
 				<view class="content margin">
 					<u-input class="margin" v-model="loginname" placeholder="请输入用户名" type="text" :border="border" />
 					<u-input class="margin" v-model="psd" placeholder="请输入密码" type='password' :border="border" />
 					<view class="u-config-item">
-						<view class="text-bold text-lg margin">选择身份：</view>
+						<view class="text-bold text margin">选择身份：</view>
 						<u-subsection :current="status" :list="['普通用户','管理员']" @change="identityChange">
 						</u-subsection>
 					</view>
