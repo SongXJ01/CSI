@@ -1,18 +1,21 @@
 <template>
 	<view>
 		<!-- 空白行 -->
-		<view class='cu-tabbar-height'></view>
+		<!-- <view class='cu-tabbar-height'></view> -->
 		<!-- 滑动验证模态框 -->
 		<view class="cu-modal" :class="modalName=='ModalVerify'?'show':''">
 			<view class="cu-dialog bg-white padding">
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
-
-
-		<view class="padding text-center margin-top">
-			<image src="/static/Logo.png" mode='widthFix'></image>
+		<view class="UCenter-bg">
+			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
+			<view class="margin-top-sm">
+				<text>V 1.0.0</text>
+			</view>
+			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
+
 
 		<view class="padding margin-top-xl">
 			<view class="padding bg-white" style="border-radius: 30rpx;">
@@ -218,4 +221,41 @@
 		text-decoration: underline;
 		color: #0081FF;
 	}
+
+	.UCenter-bg {
+		background-image: url(https://cos.51shashu.com/img/myBackground.jpg);
+		background-size: cover;
+		height: 550rpx;
+		display: flex;
+		justify-content: center;
+		padding-top: 40rpx;
+		overflow: hidden;
+		position: relative;
+		flex-direction: column;
+		align-items: center;
+		color: #fff;
+		font-weight: 300;
+		text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+	}
+
+	.UCenter-bg text {
+		opacity: 0.8;
+	}
+
+	.UCenter-bg image {
+		width: 400rpx;
+		height: 300rpx;
+	}
+
+	.UCenter-bg .gif-wave {
+		position: absolute;
+		width: 100%;
+		bottom: 0;
+		left: 0;
+		z-index: 99;
+		mix-blend-mode: screen;
+		height: 100rpx;
+	}
+
+	
 </style>
