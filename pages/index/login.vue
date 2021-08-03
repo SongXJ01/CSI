@@ -30,7 +30,7 @@
 					<view class="text-left text-green" @click="toRegister"> （注册） </view>
 					<button class="padding cu-btn round bg-gradual-blue shadow lg margin-tb" @click="isHuman()">登
 						录</button>
-					<view class="text-right text-blue hyperlink">忘记密码</view>
+					<view class="text-right text-blue hyperlink" @click="toForgetPsd">忘记密码</view>
 				</view>
 			</view>
 		</view>
@@ -127,9 +127,15 @@
 										title: '登录成功',
 										type: 'success',
 									})
-									uni.navigateTo({
-										url: '../Manage/index'
-									})
+									if (this.status == 1) {
+										uni.navigateTo({
+											url: '../Manage/index'
+										})
+									} else {
+										uni.navigateTo({
+											url: '../CommonUser/index'
+										})
+									}
 								} else {
 									this.$refs.uToast.show({
 										title: '权限错误',
@@ -150,10 +156,18 @@
 				}
 			},
 
-			//跳转注册页面
+			// 跳转注册页面
 			toRegister() {
 				uni.navigateTo({
 					url: './register'
+				})
+			},
+
+
+			// 跳转忘记密码页面
+			toForgetPsd() {
+				uni.navigateTo({
+					url: './forgetPsd'
 				})
 			},
 
