@@ -9,10 +9,7 @@
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
-		},{
-			"path": "pages/index/index",
-			"style": {}
-		},  {
+		}, {
 			"path": "pages/Manage/StaffManage",
 			"style": {
 				"navigationBarTitleText": "",
