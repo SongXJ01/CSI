@@ -1,4 +1,4 @@
-<template>
+<template >
 	<view class="bg-white">
 		<!-- 滑动验证模态框 -->
 		<view class="cu-modal" :class="modalName=='ModalVerify'?'show':''">
@@ -16,6 +16,7 @@
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
+		<!-- 登录框 -->
 		<view class="padding margin-top-xl">
 			<view class="padding myBorder">
 				<view class="text-bold text-center text-xl margin-top">登 录</view>

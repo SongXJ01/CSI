@@ -6,7 +6,7 @@
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
-		
+
 		<!-- 顶部图片 -->
 		<view class="UCenter-bg">
 			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
@@ -16,7 +16,7 @@
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
-
+		<!-- 注册框 -->
 		<view class="padding margin-top-xl ">
 			<view class="padding myBorder">
 				<view class="text-bold text-center text-xl margin-top">注 册</view>
@@ -26,7 +26,8 @@
 					<u-input class="margin" v-model="email" placeholder="请输入邮箱" type="email" :border="border" />
 					<view class="cu-form-group">
 						<u-input v-model="vCode" placeholder="请输入验证码" type="number" :border="border" />
-						<button class='cu-btn bg-green shadow margin-left-sm' @click="sendYzm">获取验证码</button>
+						<button class='cu-btn shadow margin-left-sm' :class="vCodeStatus? 'bg-grey':' bg-green'"
+							@click="sendYzm">获取验证码</button>
 					</view>
 
 					<u-input class="margin" v-model="psd1" placeholder="请输入密码" type='password' :border="border" />
@@ -80,6 +81,7 @@
 				loginname: '',
 				email: '', // 邮箱
 				vCode: '', // 验证码
+				vCodeStatus: false, // 验证码获取状态
 				psd1: '', // 第一次输入密码
 				psd2: '', // 再次输入密码
 				status: '', // 权限 0-普通用户，1-管理员
@@ -101,6 +103,7 @@
 					},
 					success: (res) => {
 						console.log("请求 sendYzm 接口成功", res)
+						this.vCodeStatus = true
 					},
 					fail: (err) => {
 						console.log("请求 sendYzm 接口失败")
@@ -207,5 +210,5 @@
 </script>
 
 <style>
-	
+
 </style>
