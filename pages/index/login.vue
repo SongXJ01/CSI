@@ -126,6 +126,7 @@
 									this.user.email = res.data.data.email
 									this.user.status = res.data.data.status
 									this.user.loginname = res.data.data.loginname
+									this.user.photo = res.data.data.photo
 									this.$refs.uToast.show({
 										title: '登录成功',
 										type: 'success',

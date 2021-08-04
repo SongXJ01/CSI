@@ -22,6 +22,11 @@
 	border-width: 2px;
 }
 
+.card-myBorder {
+	border-radius: 30rpx;
+	background-color: #86dbf9;
+}
+
 /* 超链接 */
 .hyperlink {
 	text-decoration: underline;

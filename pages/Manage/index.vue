@@ -1,21 +1,24 @@
 <template>
-	<view>
+	<view class="bg-white">
 
 		<!-- 顶部导航栏 -->
-		<view class="cu-bar bg-gradual-blue search">
+		<view class="cu-bar search fixed text-white">
 			<view class="cu-avatar radius" v-if="avatar==''" @tap="ChooseImage">
 				<text class="cuIcon-people"></text>
 			</view>
-			<view v-else class="cu-avatar radius margin-left" :style="[{ backgroundImage:'url(' + avatar + ')' }]"
-				@tap="ChooseImage">
+			<view v-else class="cu-avatar radius margin-left"
+				:style="[{ backgroundImage:'url(' + 'data:image/jpeg;base64,'+ avatar+ ')' }]" @tap="ChooseImage">
 			</view>
-
-			<view class="content">
-				CSI 管理端
-			</view>
+			<view class="content">CSI 管理端</view>
 			<view class="action">
 				<text class="cuIcon-more"></text>
 			</view>
+		</view>
+
+		<!-- 顶部图片 -->
+		<view class="UCenter-bg">
+			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
+			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
 
@@ -31,6 +34,8 @@
 			</view>
 			<view class="cu-tabbar-height"></view>
 		</scroll-view>
+
+
 
 	</view>
 </template>
@@ -49,11 +54,10 @@
 		}),
 		onLoad() {
 			console.log("(测试VueX连接) 用户名：", this.user.loginname) // 使用 store 中的 user
+			this.avatar = this.user.photo
 		},
 		data() {
 			return {
-				avatar: '',
-				// avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81005.jpg', // 头像
 				elements: [{
 						title: '员工管理',
 						name: 'StaffManage',
@@ -79,10 +83,13 @@
 						cuIcon: 'colorlens'
 					}
 				],
+				avatar: '',
 			}
 		},
 
 		methods: {
+
+
 			// 上传头像
 			ChooseImage() {
 				uni.chooseImage({
@@ -94,11 +101,14 @@
 							filePath: tempFilePaths[0],
 							name: 'file',
 							formData: {
-								'username': "123", 
-								'email': "123@123" 
+								'loginname': this.user.loginname,
+								'email': this.user.email
 							},
 							success: (res) => {
+								var res = JSON.parse(res.data)
 								console.log(res)
+								this.avatar = res.data.photo
+
 							}
 						})
 					}

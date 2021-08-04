@@ -1,6 +1,6 @@
 <template>
 	<view class="bg-white">
-		
+
 		<!-- 顶部导航条 -->
 		<view class="fixed">
 			<cu-custom :isBack="true" bgColor="text-white">
@@ -14,19 +14,53 @@
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
+		<!-- 空隙行 -->
+		<view class='cu-tabbar-height'></view>
 
-		<view class="cu-list menu sm-border card-menu margin-top-xl myBorder">
-			<view class="cu-item arrow" v-for="(item,index) in orderList" v-bind:key="item.id">
-				<view class="content margin">
-					<text class="cuIcon-title text-blue"></text>
-					<text class="text ">{{item.orderName}}</text>
-				</view>
-				<view class="cu-tag bg-blue light round margin-xs">
-					{{item.orderTimeBegin}} -- {{item.orderTimeEnd}}
+		<view class="padding text-center margin-top" v-if="departList.length<=0">
+			<view class="padding card-myBorder">
+				<view class="padding text-lg">（暂无部门数据）</view>
+			</view>
+		</view>
+
+		<view v-if="departList.length>0">
+			<view class="cu-card">
+				<view class="cu-item shadow " v-for="(item,index) in departList" v-bind:key="item.id">
+					<!-- 详情视图 -->
+					<view class="cu-item padding myBorder" v-if="isDetail  && index==nowID">
+						<view class="cf align-center ">
+							<view class="margin text-black text-bold text-xl fl" @click="fileDetail" :id="index">
+								<text class="cuIcon-title text-blue"></text> {{item.orderName}}（{{item.departNum}} 人）
+							</view>
+							<view class="margin text-black text-bold text-lg text-right cuIcon-fold fr"
+								@click="hideDetail" :id="index">
+							</view>
+						</view>
+						<!-- 详情内容 -->
+						<view class="margin">
+							{{item.departContent}}
+						</view>
+					</view>
+
+
+					<!-- 简单视图 -->
+					<view class="cu-item padding cf align-center card-myBorder" v-else>
+						<view class="margin text-white text-bold text-xl fl" @click="fileDetail" :id="index">
+							{{item.orderName}}
+						</view>
+						<view class="margin text-black text-bold text-lg text-right cuIcon-unfold fr"
+							@click="showDetail" :id="index">
+						</view>
+						<view class="margin cu-tag bg-blue light round fr">
+							{{item.departNum}} 人
+						</view>
+					</view>
+
 				</view>
 			</view>
 		</view>
-		
+
+
 		<!-- 底部空白行 -->
 		<view class='cu-tabbar-height'></view>
 
@@ -37,23 +71,36 @@
 	export default {
 		data() {
 			return {
-				orderList: [{
-					orderName: "AAA",
-					orderTimeBegin: "10:20",
-					orderTimeEnd: "11:20",
-				}, {
-					orderName: "BBB",
-					orderTimeBegin: "10:20",
-					orderTimeEnd: "11:20",
-				}, ]
+				see: true,
+				isDetail: false, // 是否展开详情视图
+				nowID: -1, // 展开详情的item
+				departList: [], // 部门列表
 			}
 		},
 		onLoad() {
 			this.getOrderList().then(res => {
-				this.orderList = res
+				this.departList = res
 			})
 		},
+		// 触底事件
+		onReachBottom() {
+			console.log('触底加载数据')
+		},
 		methods: {
+
+			// 展示部门详情视图
+			showDetail: function(event) {
+				console.log("展示详情视图: ", event.currentTarget.id)
+				this.isDetail = true
+				this.nowID = event.currentTarget.id
+			},
+
+			// 隐藏部门详情视图
+			hideDetail: function() {
+				console.log("隐藏详情视图")
+				this.isDetail = false
+			},
+
 			// 异步加载预约列表
 			getOrderList() {
 				return new Promise((resolve, reject) => {
@@ -70,7 +117,6 @@
 							reject(err)
 						}
 					})
-
 				})
 			},
 
@@ -79,8 +125,4 @@
 </script>
 
 <style>
-	.fixed {
-		position: fixed;
-		z-index: 99;
-	}
 </style>

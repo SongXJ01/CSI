@@ -4,6 +4,7 @@ const state = () => ({
 	password: "string", // 用户密码
 	status: 0, // 用户身份权限  0-普通用户  1-管理员
 	username: "string", // 姓名
+	photo: '', // 头像
 })
 
 // getters
