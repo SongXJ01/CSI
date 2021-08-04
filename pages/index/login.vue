@@ -72,7 +72,7 @@
 			return {
 				loginname: '',
 				psd: '',
-				status: '',
+				status: 0,
 				border: true,
 				modalName: '',
 				verifyRes: this.$store.state.isHuman, // 真人验证
@@ -118,7 +118,7 @@
 							"password": this.psd,
 						},
 						success: (res) => {
-							console.log("请求 login 接口成功", res.data.data)
+							console.log("请求 login 接口成功", res)
 							if (res.data.desc == "登陆成功") {
 								if (res.data.data.status == this.status) {
 									// 更新全局变量
@@ -147,7 +147,7 @@
 								}
 							} else {
 								this.$refs.uToast.show({
-									title: '用户名或密码错误',
+									title: res.data.desc,
 									type: 'error',
 								})
 							}

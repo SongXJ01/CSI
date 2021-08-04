@@ -6,7 +6,14 @@
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
-
+		
+		<!-- 顶部导航条 -->
+		<view class="fixed">
+			<cu-custom :isBack="true" bgColor="text-white">
+				<block slot="backText">返回</block>
+			</cu-custom>
+		</view>
+		
 		<!-- 顶部图片 -->
 		<view class="UCenter-bg">
 			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
@@ -26,8 +33,11 @@
 					<u-input class="margin" v-model="email" placeholder="请输入邮箱" type="email" :border="border" />
 					<view class="cu-form-group">
 						<u-input v-model="vCode" placeholder="请输入验证码" type="number" :border="border" />
-						<button class='cu-btn shadow margin-left-sm' :class="vCodeStatus? 'bg-grey':' bg-green'"
-							@click="sendYzm">获取验证码</button>
+						<button class='cu-btn shadow margin-left-sm bg-green' v-if="!vCodeStatus"
+							@click="sendYzm">{{vCodeShow}}</button>
+						<button class='cu-btn shadow margin-left-sm bg-grey' v-else @click="sendYzm"><text
+								class="cuIcon-loading2 cuIconfont-spin margin-right-sm"></text> {{vCodeShow}} s</button>
+
 					</view>
 
 					<u-input class="margin" v-model="psd1" placeholder="请输入密码" type='password' :border="border" />
@@ -75,6 +85,12 @@
 			console.log("(测试VueX连接) 云存储路径：", this.$store.state.cloudPath)
 			console.log("(测试VueX连接) 用户名：", this.user.loginname) // 使用 store 中的 user
 		},
+		onHide() { // 页面隐藏消除定时器
+			if (this.timer) {
+				clearTimeout(this.timer);
+				this.timer = null;
+			}
+		},
 
 		data() {
 			return {
@@ -82,12 +98,14 @@
 				email: '', // 邮箱
 				vCode: '', // 验证码
 				vCodeStatus: false, // 验证码获取状态
+				vCodeShow: '获取验证码',
 				psd1: '', // 第一次输入密码
 				psd2: '', // 再次输入密码
-				status: '', // 权限 0-普通用户，1-管理员
+				status: 0, // 权限 0-普通用户，1-管理员
 				username: '', // 姓名
 				border: true,
 				modalName: '',
+				timer: null, // 验证码定时器
 				verifyRes: this.$store.state.isHuman, // 真人验证
 			}
 		},
@@ -95,20 +113,45 @@
 		methods: {
 			// 获取验证码
 			sendYzm() {
-				uni.request({
-					url: this.$store.state.apiPath + "/user/sendYzm",
-					method: 'POST',
-					data: {
-						"email": this.email,
-					},
-					success: (res) => {
-						console.log("请求 sendYzm 接口成功", res)
-						this.vCodeStatus = true
-					},
-					fail: (err) => {
-						console.log("请求 sendYzm 接口失败")
-					}
-				})
+				if (!this.vCodeStatus) { // 只有在未获取验证码的状态下才可发送请求
+					uni.request({
+						url: this.$store.state.apiPath + "/user/sendYzm",
+						method: 'POST',
+						data: {
+							"email": this.email,
+						},
+						success: (res) => {
+							console.log("请求 sendYzm 接口成功", res)
+							if (res.data.desc == "发送成功") {
+								this.$refs.uToast.show({
+									title: res.data.desc,
+									type: 'success',
+								})
+								this.vCodeStatus = true
+								// 倒计时
+								this.vCodeShow = 60
+								this.timer = setInterval(() => {
+									if (this.vCodeShow > 0) {
+										this.vCodeShow = this.vCodeShow - 1
+									} else {
+										clearTimeout(this.timer);
+										this.timer = null;
+										this.vCodeStatus = false
+										this.vCodeShow = '重新获取验证码'
+									}
+								}, 1000)
+							} else {
+								this.$refs.uToast.show({
+									title: res.data.desc,
+									type: 'error',
+								})
+							}
+						},
+						fail: (err) => {
+							console.log("请求 sendYzm 接口失败")
+						}
+					})
+				}
 			},
 
 			// 滑动模块校验结果回调函数
@@ -138,7 +181,7 @@
 				}
 			},
 
-			// 发送登录请求
+			// 发送注册请求
 			register() {
 				if (this.verification()) {
 					uni.request({
@@ -147,35 +190,29 @@
 						data: {
 							"email": this.email,
 							"loginname": this.loginname,
-							"password": this.psd,
+							"password": this.psd1,
 							"status": this.status,
 							"username": this.username,
+							"yzm": this.vCode,
 						},
 						success: (res) => {
 							console.log("请求 register 接口成功", res)
-							if (res.data.desc == "登陆成功") {
-								if (res.data.data.status == this.status) {
-									// 更新全局变量
-									this.user.loginname = res.data.data.loginname
-									this.user.email = res.data.data.email
-									this.user.status = res.data.data.status
-									this.user.username = res.data.data.username
-									this.$refs.uToast.show({
-										title: '登录成功',
-										type: 'success',
-									})
-									uni.navigateTo({
-										url: '../Manage/index'
-									})
-								} else {
-									this.$refs.uToast.show({
-										title: '权限错误',
-										type: 'error',
-									})
-								}
+							if (res.data.desc == "注册成功") {
+								// 更新全局变量
+								this.user.loginname = res.data.data.loginname
+								this.user.email = res.data.data.email
+								this.user.status = res.data.data.status
+								this.user.username = res.data.data.username
+								this.$refs.uToast.show({
+									title: '注册成功',
+									type: 'success',
+								})
+								uni.navigateTo({
+									url: '../index/login'
+								})
 							} else {
 								this.$refs.uToast.show({
-									title: '用户名或密码错误',
+									title: res.data.desc,
 									type: 'error',
 								})
 							}

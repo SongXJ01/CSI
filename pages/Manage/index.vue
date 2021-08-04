@@ -1,9 +1,22 @@
 <template>
 	<view>
 
-		<cu-custom bgColor="bg-gradual-blue">
-			<view slot="content">CSI 管理端</view>
-		</cu-custom>
+		<!-- 顶部导航栏 -->
+		<view class="cu-bar bg-gradual-blue search">
+			<view class="cu-avatar radius" v-if="avatar==''" @tap="ChooseImage">
+				<text class="cuIcon-people"></text>
+			</view>
+			<view v-else class="cu-avatar radius margin-left" :style="[{ backgroundImage:'url(' + avatar + ')' }]"
+				@tap="ChooseImage">
+			</view>
+
+			<view class="content">
+				CSI 管理端
+			</view>
+			<view class="action">
+				<text class="cuIcon-more"></text>
+			</view>
+		</view>
 
 
 		<scroll-view scroll-y class="margin-top-xl padding-top-xl">
@@ -39,6 +52,8 @@
 		},
 		data() {
 			return {
+				avatar: '',
+				// avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81005.jpg', // 头像
 				elements: [{
 						title: '员工管理',
 						name: 'StaffManage',
@@ -68,14 +83,32 @@
 		},
 
 		methods: {
-
+			// 上传头像
+			ChooseImage() {
+				uni.chooseImage({
+					count: 1,
+					success: (res) => {
+						const tempFilePaths = res.tempFilePaths;
+						uni.uploadFile({
+							url: this.$store.state.apiPath + "/user/photoUpload",
+							filePath: tempFilePaths[0],
+							name: 'file',
+							formData: {
+								'username': "123", 
+								'email': "123@123" 
+							},
+							success: (res) => {
+								console.log(res)
+							}
+						})
+					}
+				})
+			}
 		}
-	};
+	}
 </script>
 
 <style>
-
-
 	.page {
 		height: 100vh;
 	}

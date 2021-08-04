@@ -1,3 +1,9 @@
+/* 顶部导航条 */
+.fixed {
+	position: fixed;
+	z-index: 99;
+}
+
 /* 行内超宽省略 */
 .line-limit-length {
 	max-inline-size: 350rpx;
@@ -27,7 +33,7 @@
 	background-color: #86dbf9;
 	/* background-image: url(https://cos.51shashu.com/img/myBackground.jpg); */
 	background-size: cover;
-	height: 350rpx; 
+	height: 350rpx;
 	display: flex;
 	justify-content: center;
 	padding-top: 30rpx;

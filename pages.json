@@ -68,7 +68,7 @@
 		}
 	],
 	"globalStyle": {
-		"backgroundColor": "#F8F8F8",
+		"backgroundColor": "#ffffff",
 		"navigationStyle": "custom"
 	}
 }
