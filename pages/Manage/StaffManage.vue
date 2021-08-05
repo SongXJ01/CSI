@@ -19,7 +19,7 @@
 		<view class=" flex margin-sm align-center">
 			<u-input class="margin-sm" v-model="searchStaff" placeholder="员工名" type="text" :border="true" />
 			<u-input class="margin-sm" v-model="searchDepart" placeholder="部门名" type="text" :border="true" />
-			<button class="padding cu-btn round bg-gradual-blue shadow margin-tb" @click="isHuman()">筛选</button>
+			<button class="padding cu-btn round bg-gradual-blue shadow margin-tb" @click="queryStaff()">筛选</button>
 		</view>
 
 
@@ -31,14 +31,25 @@
 						<text class="cuIcon-circlefill text-red margin-sm"> </text>
 						<text class="text-bold">员工列表</text>
 					</view>
-				</view>
-				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id" v-if="index < 10">
-					<view class="align-center cf" @click="showDetail" :id="index">
-						<text class="margin-right-sm cuIcon-title text-blue"></text>
-						<text class="text-grey">{{item.name}}</text>
-						<text class="margin-left-xl cu-tag bg-blue light round text-sm fr">{{item.depart}}</text>
+					<view class="cu-tag round light bg-white" @click="change_isEdit" v-if="!isEdit">
+						<view class="cuIcon-moreandroid text-bold text-blue margin-right-sm"></view>
+					</view>
+					<view class="cu-tag round light bg-red" @click="change_isEdit" v-else>
+						<view class="cuIcon-close text-red margin-right-sm"></view> 删除
 					</view>
 				</view>
+
+				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id" v-if="index < 10">
+					<view class="align-center cf">
+						<checkbox class="margin-right-sm" :class="item.checked?'checked':''"
+							:checked="item.checked?true:false" v-if="isEdit" @tap="CheckboxChange(item)">
+						</checkbox>
+						<text class="margin-right-sm cuIcon-title text-blue" v-else></text>
+						<text class="text-grey" @click="showDetail(item)">{{item.emp_name}}</text>
+						<text class="margin-left-xl cu-tag bg-blue light round text-sm fr">{{item.dept_name}}</text>
+					</view>
+				</view>
+
 			</view>
 		</view>
 
@@ -46,14 +57,28 @@
 		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
-					<view class="content">Modal标题</view>
+					<view class="content">{{nowStaff.emp_name}} <text
+							class="margin-left-sm cu-tag bg-blue light round text-sm">{{nowStaff.dept_name}}</text>
+					</view>
 					<view class="action" @tap="hideDetail">
 						<text class="cuIcon-close text-red"></text>
 					</view>
 				</view>
-				<view class="padding-xl">
-					Modal 内容。
+				<!-- 展示信息 -->
+				<view class="padding-xl text-left">
+					<view class="margin-sm"> <text
+							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
+					<view class="margin-sm"> <text
+							class="cuIcon-newsfill text-orange margin-right-sm"></text>邮箱：{{nowStaff.email}}</view>
+					<view class="margin-sm"> <text
+							class="cuIcon-homefill text-orange margin-right-sm"></text>地址：{{nowStaff.address}}</view>
+					<view class="margin-sm">
+						<text class="cuIcon-medalfill text-orange margin-right-sm"></text>学历：{{nowStaff.speciality}} -
+						{{nowStaff.education}}
+					</view>
 				</view>
+				<button class="padding cu-btn round line-orange shadow margin-bottom" @click="updateStaff()">修改</button>
+
 			</view>
 		</view>
 
@@ -67,11 +92,10 @@
 			return {
 				StaffList: '', // 员工列表
 				modalName: '', // 模态框
-				nowID: -1, // 展开详情的item
-				// 查询条件
-				searchStaff: '',
-				searchDepart: '',
-
+				nowStaff: '', // 展开详情的staff
+				searchStaff: '', // 查询条件
+				searchDepart: '', // 查询条件
+				isEdit: false, // 是否编辑
 			}
 		},
 		onLoad() {
@@ -84,18 +108,24 @@
 			console.log('触底加载数据')
 		},
 		methods: {
-
 			// 异步加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
 					uni.request({
-						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getStaff",
-						method: "GET",
+						url: this.$store.state.apiPath + "/employee/query2",
+						method: "POST",
 						data: {
-							"coachID": "Beibei123",
+							"pageNum": 1,
+							"pageSize": 20,
+							"emp_name": this.searchStaff,
+							"dept_name": this.searchDepart
 						},
 						success: (res) => {
-							resolve(res.data.data.staffList)
+							var staffList = res.data.employees
+							staffList.forEach(item => {
+								item.checked = false
+							})
+							resolve(staffList)
 						},
 						fail: (err) => {
 							reject(err)
@@ -103,16 +133,35 @@
 					})
 				})
 			},
+
+			// 筛选员工
+			queryStaff() {
+				this.getStaffList().then(res => {
+					this.StaffList = res
+				})
+			},
+
+			// 复选框
+			CheckboxChange(item) {
+				item.checked = !item.checked
+			},
+
+			// 切换编辑状态
+			change_isEdit() {
+				this.isEdit = !this.isEdit
+			},
+
 			// 展示详情
-			showDetail: function(event) {
-				console.log("展示详情视图: ", event.currentTarget.id)
+			showDetail(item) {
+				console.log("展示详情视图: ", item.name)
+				this.nowStaff = item
 				this.modalName = "modelDetail"
-				this.nowID = event.currentTarget.id
 			},
 			// 隐藏模态框
-			hideDetail: function() {
+			hideDetail() {
 				console.log("隐藏详情视图")
-				this.modalName = ""
+				this.nowStaff = ''
+				this.modalName = ''
 			},
 
 		}
