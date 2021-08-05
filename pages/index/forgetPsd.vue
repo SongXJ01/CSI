@@ -1,9 +1,21 @@
 <template>
 	<view class="bg-white">
 
-		<cu-custom bgColor="bg-gradual-blue" :isBack="true">
-			<view slot="content">找回密码</view>
-		</cu-custom>
+		<!-- 顶部导航条 -->
+		<view class="fixed">
+			<cu-custom :isBack="true" bgColor="text-white">
+				<block slot="backText">返回</block>
+				<block slot="content">修改密码</block>
+			</cu-custom>
+		</view>
+		<!-- 顶部图片 -->
+		<view class="UCenter-bg">
+			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
+			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
+		</view>
+
+		<!-- 空隙行 -->
+		<view class='cu-tabbar-height'></view>
 
 		<view class="padding margin-top-xl ">
 			<view class="padding myBorder">

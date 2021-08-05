@@ -53,7 +53,7 @@
 		<view class="cu-modal drawer-modal justify-end" :class="modalName=='DrawerModalR'?'show':''" @tap="hideModal">
 			<view class="cu-dialog basis-lg" @tap.stop="" :style="[{top:CustomBar+'px',height:'200rpx',}]">
 				<view class="cu-list menu text-left">
-					<view class="cu-item arrow">修改密码</view>
+					<navigator class="cu-item arrow" url="../index/forgetPsd">修改密码</navigator>
 					<view class="cu-item arrow" @tap="ChooseImage">修改头像</view>
 				</view>
 			</view>
