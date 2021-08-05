@@ -46,8 +46,8 @@
 		</view>
 
 		<!-- 模态框 -->
-		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''">
-			<view class="cu-dialog">
+		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''" @tap="hideDetail()">
+			<view class="cu-dialog bg-white">
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{nowStaff.emp_name}} <text
 							:class="'margin-left-sm cu-tag light round text-sm bg-'+colorList[nowStaff.dept_id]">{{nowStaff.dept_name}}</text>
@@ -57,7 +57,7 @@
 					</view>
 				</view>
 				<!-- 展示信息 -->
-				<view class="padding-xl text-left">
+				<view class="padding margin text-left staffBorder">
 					<view class="margin-sm"> <text
 							class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}</view>
 					<view class="margin-sm"> <text
@@ -75,6 +75,12 @@
 			</view>
 		</view>
 
+		<!-- 空隙行 -->
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
 	</view>
 </template>
 
@@ -157,5 +163,11 @@
 </script>
 
 <style>
-
+/* 橘色圆角边框 */
+.staffBorder {
+	border-radius: 30rpx;
+	border-style: solid;
+	border-color: #f37b1d;
+	border-width: 1.5px;
+}
 </style>

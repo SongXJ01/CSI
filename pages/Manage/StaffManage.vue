@@ -55,8 +55,8 @@
 		</view>
 
 		<!-- 模态框 -->
-		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''">
-			<view class="cu-dialog">
+		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''" @tap="hideDetail()">
+			<view class="cu-dialog bg-white">
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{nowStaff.emp_name}} <text
 							:class="'margin-left-sm cu-tag light round text-sm bg-'+colorList[nowStaff.dept_id]">{{nowStaff.dept_name}}</text>
@@ -66,9 +66,11 @@
 					</view>
 				</view>
 				<!-- 展示信息 -->
-				<view class="padding-xl text-left">
-					<view class="margin-sm"> <text
-							class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}</view>
+				<view class="padding margin text-left staffBorder">
+					<view class="margin-sm">
+						<text class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}<text
+							class='margin-left' :class="nowStaff.emp_id==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
+					</view>
 					<view class="margin-sm"> <text
 							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
 					<view class="margin-sm"> <text
@@ -80,17 +82,31 @@
 						{{nowStaff.education}}
 					</view>
 				</view>
-				<button class="padding cu-btn round line-orange shadow margin-bottom" @click="updateStaff()">修改</button>
+
+				<button class="padding cu-btn round line-orange shadow margin-bottom"
+					@click="updateStaff()">修改员工信息</button>
 
 			</view>
 		</view>
 
-
+		<!-- 空隙行 -->
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
 	</view>
 </template>
 
 <script>
+	// 导入 VueX
+	import {
+		mapState,
+		mapActions
+	} from 'vuex'
 	export default {
+		// VueX 连接 staff
+		computed: mapState({
+			staff: state => state.staff
+		}),
 		data() {
 			return {
 				colorList: this.$store.state.colorList, // 颜色列表
@@ -145,9 +161,17 @@
 				})
 			},
 
+			// 修改员工信息
+			updateStaff() {
+				this.hideDetail()
+				uni.navigateTo({
+					url: 'StaffDetail'
+				})
+			},
+
 			// 筛选员工
 			queryStaff() {
-				this.pageNum = 1	// 页码数归零
+				this.pageNum = 1 // 页码数归零
 				this.getStaffList().then(res => {
 					this.StaffList = res
 				})
@@ -167,8 +191,19 @@
 			showDetail(item) {
 				console.log("展示详情视图: ", item.name)
 				this.nowStaff = item
+				this.staff.phone = item.phone
+				this.staff.emp_id = item.emp_id
+				this.staff.dept_id = item.dept_id
+				this.staff.emp_name = item.emp_name
+				this.staff.dept_name = item.dept_name
+				this.staff.sex = item.sex
+				this.staff.address = item.address
+				this.staff.email = item.email
+				this.staff.education = item.education
+				this.staff.speciality = item.speciality
 				this.modalName = "modelDetail"
 			},
+
 			// 隐藏模态框
 			hideDetail() {
 				console.log("隐藏详情视图")
@@ -181,5 +216,11 @@
 </script>
 
 <style>
-
+	/* 橘色圆角边框 */
+	.staffBorder {
+		border-radius: 30rpx;
+		border-style: solid;
+		border-color: #f37b1d;
+		border-width: 1.5px;
+	}
 </style>

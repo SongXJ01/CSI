@@ -14,7 +14,12 @@
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 		
-		
+		<!-- 空隙行 -->
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
 	</view>
 </template>
 

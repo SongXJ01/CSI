@@ -36,9 +36,13 @@
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
+		
 		<!-- 消息提示框 -->
 		<u-toast ref="uToast" />
 		<!-- 空白行 -->
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
 		<view class='cu-tabbar-height'></view>
 
 	</view>

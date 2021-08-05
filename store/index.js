@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './modules/user.js'
+import staff from './modules/staff.js'
 
 Vue.use(Vuex)
 
@@ -8,7 +9,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	// 使用到的模块
 	modules: {
-		user
+		user,
+		staff
 	},
 
 	// 全局变量

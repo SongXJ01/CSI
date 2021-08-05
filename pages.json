@@ -84,6 +84,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/Manage/StaffDetail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"backgroundColor": "#ffffff",

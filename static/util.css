@@ -4,6 +4,13 @@
 	z-index: 99;
 }
 
+/* 首行缩进 */
+.my_paragraph {
+	text-indent: 2em;
+	text-align: justify;
+	text-justify: inter-ideograph;
+}
+
 /* 行内超宽省略 */
 .line-limit-length {
 	max-inline-size: 350rpx;

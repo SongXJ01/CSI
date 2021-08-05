@@ -43,6 +43,7 @@
 		<u-toast ref="uToast" />
 		<!-- 空白行 -->
 		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
 	</view>
 </template>
 
