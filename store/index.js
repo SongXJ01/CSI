@@ -16,7 +16,9 @@ export default new Vuex.Store({
 		logged: true, // 登录状态
 		isHuman: false, // 真人验证
 		apiPath: "http://81.68.194.16:8080", // API 接口路径
-		// cloudPath: "https://yunxiang-1301994757.cos.ap-chongqing.myqcloud.com/image/",
+		colorList: ['orange', 'olive', 'blue', 'purple', 'cyan', 'mauve', 'yellow', 'red', 'green', 'pink',
+			'brown'
+		],
 		cloudPath: "https://cdn.jsdelivr.net/gh/SongXJ01/image-hosting/image/", // PicX 图床，GitHub 映射
 	},
 

@@ -33,14 +33,15 @@
 					</view>
 				</view>
 
-				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id" v-if="index < 10">
+				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id">
 					<view class="align-center cf">
 						<text class="margin-right-sm cuIcon-title text-blue"></text>
 						<text class="text-grey" @click="showDetail(item)" :id="index">{{item.emp_name}}</text>
-						<text class="margin-left-xl cu-tag bg-blue light round text-sm fr">{{item.dept_name}}</text>
+						<text
+							:class="'margin-left-xl cu-tag light round text-sm fr bg-'+colorList[item.dept_id]">{{item.dept_name}}</text>
 					</view>
 				</view>
-
+				-
 			</view>
 		</view>
 
@@ -48,13 +49,17 @@
 		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
-					<view class="content">{{nowStaff.emp_name}}</view>
+					<view class="content">{{nowStaff.emp_name}} <text
+							:class="'margin-left-sm cu-tag light round text-sm bg-'+colorList[nowStaff.dept_id]">{{nowStaff.dept_name}}</text>
+					</view>
 					<view class="action" @tap="hideDetail">
 						<text class="cuIcon-close text-red"></text>
 					</view>
 				</view>
 				<!-- 展示信息 -->
 				<view class="padding-xl text-left">
+					<view class="margin-sm"> <text
+							class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}</view>
 					<view class="margin-sm"> <text
 							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
 					<view class="margin-sm"> <text
@@ -66,9 +71,9 @@
 						{{nowStaff.education}}
 					</view>
 				</view>
+
 			</view>
 		</view>
-
 
 	</view>
 </template>
@@ -77,12 +82,15 @@
 	export default {
 		data() {
 			return {
+				colorList: this.$store.state.colorList, // 颜色列表
 				StaffList: '', // 员工列表
 				modalName: '', // 模态框
 				nowStaff: '', // 展开详情的staff
-				// 查询条件
-				searchStaff: '',
-				searchDepart: '',
+				searchStaff: '', // 查询条件
+				searchDepart: '', // 查询条件
+				// 分页查询
+				pageNum: 1,
+				pageSize: 10,
 			}
 		},
 		onLoad() {
@@ -92,7 +100,11 @@
 		},
 		// 触底事件
 		onReachBottom() {
-			console.log('触底加载数据')
+			console.log('触底加载数据', this.pageNum)
+			this.getStaffList().then(res => {
+				this.pageNum = this.pageNum + 1
+				this.StaffList = this.StaffList.concat(res)
+			})
 		},
 		methods: {
 
@@ -100,19 +112,30 @@
 			getStaffList() {
 				return new Promise((resolve, reject) => {
 					uni.request({
-						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getStaff",
-						method: "GET",
+						url: this.$store.state.apiPath + "/employee/query2",
+						method: "POST",
 						data: {
-							"coachID": "Beibei123",
+							"pageNum": this.pageNum,
+							"pageSize": this.pageSize,
+							"emp_name": this.searchStaff,
+							"dept_name": this.searchDepart
 						},
 						success: (res) => {
-							var staffList = res.data.data.employees
+							var staffList = res.data.employees
 							resolve(staffList)
 						},
 						fail: (err) => {
 							reject(err)
 						}
 					})
+				})
+			},
+
+			// 筛选员工
+			queryStaff() {
+				this.pageNum = 1	// 页码数归零
+				this.getStaffList().then(res => {
+					this.StaffList = res
 				})
 			},
 

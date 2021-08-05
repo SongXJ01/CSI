@@ -39,14 +39,15 @@
 					</view>
 				</view>
 
-				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id" v-if="index < 10">
+				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id">
 					<view class="align-center cf">
 						<checkbox class="margin-right-sm" :class="item.checked?'checked':''"
 							:checked="item.checked?true:false" v-if="isEdit" @tap="CheckboxChange(item)">
 						</checkbox>
 						<text class="margin-right-sm cuIcon-title text-blue" v-else></text>
 						<text class="text-grey" @click="showDetail(item)">{{item.emp_name}}</text>
-						<text class="margin-left-xl cu-tag bg-blue light round text-sm fr">{{item.dept_name}}</text>
+						<text
+							:class="'margin-left-xl cu-tag light round text-sm fr bg-'+colorList[item.dept_id]">{{item.dept_name}}</text>
 					</view>
 				</view>
 
@@ -58,7 +59,7 @@
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{nowStaff.emp_name}} <text
-							class="margin-left-sm cu-tag bg-blue light round text-sm">{{nowStaff.dept_name}}</text>
+							:class="'margin-left-sm cu-tag light round text-sm bg-'+colorList[nowStaff.dept_id]">{{nowStaff.dept_name}}</text>
 					</view>
 					<view class="action" @tap="hideDetail">
 						<text class="cuIcon-close text-red"></text>
@@ -66,6 +67,8 @@
 				</view>
 				<!-- 展示信息 -->
 				<view class="padding-xl text-left">
+					<view class="margin-sm"> <text
+							class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}</view>
 					<view class="margin-sm"> <text
 							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
 					<view class="margin-sm"> <text
@@ -90,12 +93,16 @@
 	export default {
 		data() {
 			return {
+				colorList: this.$store.state.colorList, // 颜色列表
 				StaffList: '', // 员工列表
 				modalName: '', // 模态框
 				nowStaff: '', // 展开详情的staff
 				searchStaff: '', // 查询条件
 				searchDepart: '', // 查询条件
 				isEdit: false, // 是否编辑
+				// 分页查询
+				pageNum: 1,
+				pageSize: 10,
 			}
 		},
 		onLoad() {
@@ -105,7 +112,11 @@
 		},
 		// 触底事件
 		onReachBottom() {
-			console.log('触底加载数据')
+			console.log('触底加载数据', this.pageNum)
+			this.getStaffList().then(res => {
+				this.pageNum = this.pageNum + 1
+				this.StaffList = this.StaffList.concat(res)
+			})
 		},
 		methods: {
 			// 异步加载员工列表
@@ -115,8 +126,8 @@
 						url: this.$store.state.apiPath + "/employee/query2",
 						method: "POST",
 						data: {
-							"pageNum": 1,
-							"pageSize": 20,
+							"pageNum": this.pageNum,
+							"pageSize": this.pageSize,
 							"emp_name": this.searchStaff,
 							"dept_name": this.searchDepart
 						},
@@ -136,6 +147,7 @@
 
 			// 筛选员工
 			queryStaff() {
+				this.pageNum = 1	// 页码数归零
 				this.getStaffList().then(res => {
 					this.StaffList = res
 				})
