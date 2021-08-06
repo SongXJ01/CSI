@@ -14,14 +14,12 @@
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
-
 		<!-- 筛选框 -->
 		<view class=" flex margin-sm align-center">
 			<u-input class="margin-sm" v-model="searchStaff" placeholder="员工名" type="text" :border="true" />
 			<u-input class="margin-sm" v-model="searchDepart" placeholder="部门名" type="text" :border="true" />
 			<button class="padding cu-btn round bg-gradual-blue shadow margin-tb" @click="queryStaff()">筛选</button>
 		</view>
-
 
 		<!-- 员工列表 -->
 		<view class="padding-sm ">
@@ -58,8 +56,10 @@
 				</view>
 				<!-- 展示信息 -->
 				<view class="padding margin text-left staffBorder">
-					<view class="margin-sm"> <text
-							class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}</view>
+					<view class="margin-sm">
+						<text class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}<text
+							class='margin-left' :class="nowStaff.sex==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
+					</view>
 					<view class="margin-sm"> <text
 							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
 					<view class="margin-sm"> <text
@@ -147,7 +147,7 @@
 
 			// 展示详情
 			showDetail(item) {
-				console.log("展示详情视图: ", item.name)
+				console.log("展示详情视图: ", item.emp_name)
 				this.nowStaff = item
 				this.modalName = "modelDetail"
 			},

@@ -55,10 +55,11 @@
 
 		<!-- 右侧边栏 -->
 		<view class="cu-modal drawer-modal justify-end" :class="modalName=='DrawerModalR'?'show':''" @tap="hideModal">
-			<view class="cu-dialog basis-lg" @tap.stop="" :style="[{top:CustomBar+'px',height:'200rpx',}]">
+			<view class="cu-dialog basis-lg" @tap.stop="" :style="[{top:CustomBar+'px',height:'300rpx',}]">
 				<view class="cu-list menu text-left">
 					<navigator class="cu-item arrow" url="../index/forgetPsd">修改密码</navigator>
 					<view class="cu-item arrow" @tap="ChooseImage">修改头像</view>
+					<view class="cu-item arrow" @tap="SwitchAccount">切换账号</view>
 				</view>
 			</view>
 		</view>
@@ -154,7 +155,13 @@
 					}
 				})
 			},
-
+			// 切换账号
+			SwitchAccount() {
+				uni.navigateTo({
+					url: "../index/login"
+				})
+				this.$store.dispatch('user/reset')
+			},
 			// 模态框
 			showModal(e) {
 				this.modalName = e.currentTarget.dataset.target

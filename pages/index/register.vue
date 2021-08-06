@@ -6,14 +6,14 @@
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
-		
+
 		<!-- 顶部导航条 -->
 		<view class="fixed">
 			<cu-custom :isBack="true" bgColor="text-white">
 				<block slot="backText">返回</block>
 			</cu-custom>
 		</view>
-		
+
 		<!-- 顶部图片 -->
 		<view class="UCenter-bg">
 			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
@@ -36,7 +36,7 @@
 						<button class='cu-btn shadow margin-left-sm bg-green' v-if="!vCodeStatus"
 							@click="sendYzm">{{vCodeShow}}</button>
 						<button class='cu-btn shadow margin-left-sm bg-grey' v-else @click="sendYzm"><text
-								class="cuIcon-loading2 cuIconfont-spin margin-right-sm"></text> {{vCodeShow}} s</button>
+								class="cuIcon-loading2 cuIconfont-spin margin-right-sm"></text> {{vCodeShow}}秒重新获取</button>
 
 					</view>
 
@@ -114,6 +114,9 @@
 			// 获取验证码
 			sendYzm() {
 				if (!this.vCodeStatus) { // 只有在未获取验证码的状态下才可发送请求
+					uni.showLoading({
+						title: '正在获取验证码'
+					})
 					uni.request({
 						url: this.$store.state.apiPath + "/user/sendYzm",
 						method: 'POST',
@@ -123,6 +126,7 @@
 						success: (res) => {
 							console.log("请求 sendYzm 接口成功", res)
 							if (res.data.desc == "发送成功") {
+								uni.hideLoading()
 								this.$refs.uToast.show({
 									title: res.data.desc,
 									type: 'success',

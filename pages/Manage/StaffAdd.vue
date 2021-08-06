@@ -17,19 +17,20 @@
 
 		<!-- 修改信息 -->
 		<view class="padding-xl text-left">
-			<view class="margin-sm text-bold text-lg">
-				<text class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工 ID：{{nowStaff.emp_id}}
+			<view class="cu-form-group">
+				<view class="title"><text class="cuIcon-peoplefill text-green margin-right-sm"></text>姓名：</view>
+				<input v-model="nowStaff.emp_name" placeholder="(请填写姓名)" type="text"></input>
+			
+			</view>
+			<view class="cu-form-group">
 				<!-- 性别选择 -->
-				<u-radio-group v-model="nowStaff.sex" @change="radioGroupChange" class="margin-left-lg">
+				<view class="title"><text class="cuIcon-favorfill text-green margin-right-sm"></text>性别：</view>
+				<u-radio-group v-model="nowStaff.sex" @change="radioGroupChange">
 					<u-radio v-for="(item, index) in genderlist" :key="index" :name="item.name"
 						:disabled="item.disabled">
 						<text :class="item.name==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
 					</u-radio>
 				</u-radio-group>
-			</view>
-			<view class="cu-form-group">
-				<view class="title"><text class="cuIcon-peoplefill text-green margin-right-sm"></text>姓名：</view>
-				<input v-model="nowStaff.emp_name" placeholder="(请填写姓名)" type="text"></input>
 				<picker @change="deptPickerChange" :value="deptIndex" :range="deptPicker">
 					<view class="picker text-left">
 						{{nowStaff.dept_name==''?'(请选择部门)':nowStaff.dept_name}}
@@ -60,7 +61,7 @@
 			</view>
 		</view>
 		<view class="text-center">
-			<button class="padding cu-btn round line-orange shadow margin" @click="updateStaffSubmit()">确认修改</button>
+			<button class="padding cu-btn round line-orange shadow margin" @click="updateStaffSubmit()">确认添加</button>
 		</view>
 
 		<!-- 消息提示框 -->

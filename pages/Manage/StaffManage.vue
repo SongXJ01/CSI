@@ -26,10 +26,13 @@
 		<!-- 员工列表 -->
 		<view class="padding-sm ">
 			<view class="cu-list menu sm-border card-menu margin-lr myBorder">
+				<!-- 列表头 -->
 				<view class="cu-item">
 					<view>
 						<text class="cuIcon-circlefill text-red margin-sm"> </text>
 						<text class="text-bold">员工列表</text>
+						<text @click="addStaff()"
+							class="text-bold cuIcon-add cu-tag text-green bg-green light round padding-sm margin-left-sm"></text>
 					</view>
 					<view class="cu-tag round light bg-white" @click="change_isEdit" v-if="!isEdit">
 						<view class="cuIcon-moreandroid text-bold text-blue margin-right-sm"></view>
@@ -38,7 +41,7 @@
 						<view class="cuIcon-close text-red margin-right-sm"></view> 删除
 					</view>
 				</view>
-
+				<!-- 列表体 -->
 				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id">
 					<view class="align-center cf">
 						<checkbox class="margin-right-sm" :class="item.checked?'checked':''"
@@ -69,7 +72,8 @@
 				<view class="padding margin text-left staffBorder">
 					<view class="margin-sm">
 						<text class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}<text
-							class='margin-left' :class="nowStaff.emp_id==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
+							class='margin-left'
+							:class="nowStaff.sex==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
 					</view>
 					<view class="margin-sm"> <text
 							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
@@ -168,6 +172,13 @@
 					url: 'StaffDetail'
 				})
 			},
+			
+			// 添加员工信息
+			addStaff(){
+				uni.navigateTo({
+					url: 'StaffAdd'
+				})
+			},
 
 			// 筛选员工
 			queryStaff() {
@@ -189,18 +200,19 @@
 
 			// 展示详情
 			showDetail(item) {
-				console.log("展示详情视图: ", item.name)
+				console.log("展示详情视图: ", item.emp_name)
 				this.nowStaff = item
-				this.staff.phone = item.phone
-				this.staff.emp_id = item.emp_id
-				this.staff.dept_id = item.dept_id
-				this.staff.emp_name = item.emp_name
-				this.staff.dept_name = item.dept_name
-				this.staff.sex = item.sex
-				this.staff.address = item.address
-				this.staff.email = item.email
-				this.staff.education = item.education
-				this.staff.speciality = item.speciality
+				this.$store.dispatch('staff/Cache', item)
+				// this.staff.phone = item.phone
+				// this.staff.emp_id = item.emp_id
+				// this.staff.dept_id = item.dept_id
+				// this.staff.emp_name = item.emp_name
+				// this.staff.dept_name = item.dept_name
+				// this.staff.sex = item.sex
+				// this.staff.address = item.address
+				// this.staff.email = item.email
+				// this.staff.education = item.education
+				// this.staff.speciality = item.speciality
 				this.modalName = "modelDetail"
 			},
 
