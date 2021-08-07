@@ -122,6 +122,9 @@
 			// 异步加载公告列表
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						title: '加载中'
+					})
 					uni.request({
 						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
 						// url: this.$store.state.apiPath + "/employee/query2",
@@ -132,6 +135,7 @@
 							noticeList.forEach(item => {
 								item.checked = false
 							})
+							uni.hideLoading()
 							resolve(noticeList)
 						},
 						fail: (err) => {
@@ -171,10 +175,6 @@
 				console.log("展示详情视图: ", item)
 				this.nowNotice = item
 				this.$store.dispatch('notice/Cache', item)
-				// this.notice.title = item.title
-				// this.notice.content = item.content
-				// this.notice.loginname = item.loginname
-				// this.notice.create_date = item.create_date
 				this.modalName = "modelDetail"
 			},
 

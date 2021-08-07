@@ -117,6 +117,9 @@
 			// 异步加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						title: '加载中'
+					})
 					uni.request({
 						url: this.$store.state.apiPath + "/employee/query2",
 						method: "POST",
@@ -128,6 +131,7 @@
 						},
 						success: (res) => {
 							var staffList = res.data.employees
+							uni.hideLoading()
 							resolve(staffList)
 						},
 						fail: (err) => {

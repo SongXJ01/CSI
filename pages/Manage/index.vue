@@ -124,6 +124,9 @@
 			// 异步加载公告列表
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						
+					})
 					uni.request({
 						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
 						// url: this.$store.state.apiPath + "/employee/query2",

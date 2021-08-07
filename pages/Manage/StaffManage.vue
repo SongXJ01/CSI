@@ -142,6 +142,9 @@
 			// 异步加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						title: '加载中'
+					})
 					uni.request({
 						url: this.$store.state.apiPath + "/employee/query2",
 						method: "POST",
@@ -156,6 +159,7 @@
 							staffList.forEach(item => {
 								item.checked = false
 							})
+							uni.hideLoading()
 							resolve(staffList)
 						},
 						fail: (err) => {
@@ -203,16 +207,6 @@
 				console.log("展示详情视图: ", item.emp_name)
 				this.nowStaff = item
 				this.$store.dispatch('staff/Cache', item)
-				// this.staff.phone = item.phone
-				// this.staff.emp_id = item.emp_id
-				// this.staff.dept_id = item.dept_id
-				// this.staff.emp_name = item.emp_name
-				// this.staff.dept_name = item.dept_name
-				// this.staff.sex = item.sex
-				// this.staff.address = item.address
-				// this.staff.email = item.email
-				// this.staff.education = item.education
-				// this.staff.speciality = item.speciality
 				this.modalName = "modelDetail"
 			},
 

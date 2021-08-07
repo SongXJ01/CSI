@@ -1,4 +1,4 @@
-<template >
+<template>
 	<view class="bg-white">
 		<!-- 滑动验证模态框 -->
 		<view class="cu-modal" :class="modalName=='ModalVerify'?'show':''">
@@ -111,6 +111,9 @@
 			// 发送登录请求
 			login() {
 				if (this.verification()) {
+					uni.showLoading({
+						title: '登录中'
+					})
 					uni.request({
 						url: this.$store.state.apiPath + "/user/login",
 						method: 'POST',
@@ -119,6 +122,7 @@
 							"password": this.psd,
 						},
 						success: (res) => {
+							uni.hideLoading()
 							console.log("请求 login 接口成功", res)
 							if (res.data.desc == "登陆成功") {
 								if (res.data.data.status == this.status) {
@@ -185,9 +189,10 @@
 					})
 					return false
 				}
-				if (this.psd.length > 20 || this.psd.length == 0) {
+				const regPsd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/
+				if(!regPsd.test(this.psd)){
 					this.$refs.uToast.show({
-						title: '密码不合法',
+						title: '请输入(6-16位)数字和字母组合',
 						type: 'error',
 					})
 					return false

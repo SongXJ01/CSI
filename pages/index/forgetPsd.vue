@@ -48,7 +48,7 @@
 				<move-verify @result='verifyResult' ref="verifyElement"></move-verify>
 			</view>
 		</view>
-		
+
 		<!-- 消息提示框 -->
 		<u-toast ref="uToast" />
 		<!-- 空白行 -->
@@ -107,6 +107,9 @@
 			// 获取验证码
 			sendYzm() {
 				if (!this.vCodeStatus) { // 只有在未获取验证码的状态下才可发送请求
+					uni.showLoading({
+						title: '正在获取验证码'
+					})
 					uni.request({
 						url: this.$store.state.apiPath + "/user/sendYzm",
 						method: 'POST',
@@ -114,6 +117,7 @@
 							"email": this.email,
 						},
 						success: (res) => {
+							uni.hideLoading()
 							console.log("请求 sendYzm 接口成功", res)
 							if (res.data.desc == "发送成功") {
 								this.$refs.uToast.show({
@@ -173,6 +177,9 @@
 			// 发送重置密码请求
 			register() {
 				if (this.verification()) {
+					uni.showLoading({
+						title: '正在重置密码'
+					})
 					uni.request({
 						url: this.$store.state.apiPath + "/user/changePassword",
 						method: 'POST',
@@ -182,6 +189,7 @@
 							"yzm": this.vCode,
 						},
 						success: (res) => {
+							uni.hideLoading()
 							console.log("请求 changePassword 接口成功", res)
 							if (res.data.desc == "修改密码成功") {
 								// 更新全局变量
@@ -211,11 +219,22 @@
 			},
 
 
+
 			// 验证输入框的合法性
 			verification() {
-				if (this.psd1.length > 20 || this.psd1.length == 0) {
+				var regEmail =
+					/^(\w+((-\w+)|(\.\w+))*)\+\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
+				if (!regEmail.test(this.email)) {
 					this.$refs.uToast.show({
-						title: '密码不合法',
+						title: '邮箱格式不合法',
+						type: 'error',
+					})
+					return false
+				}
+				var regPsd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/
+				if (!regPsd.test(this.psd1)) {
+					this.$refs.uToast.show({
+						title: '请输入(6-16位)数字和字母组合',
 						type: 'error',
 					})
 					return false

@@ -36,7 +36,8 @@
 						<button class='cu-btn shadow margin-left-sm bg-green' v-if="!vCodeStatus"
 							@click="sendYzm">{{vCodeShow}}</button>
 						<button class='cu-btn shadow margin-left-sm bg-grey' v-else @click="sendYzm"><text
-								class="cuIcon-loading2 cuIconfont-spin margin-right-sm"></text> {{vCodeShow}}秒重新获取</button>
+								class="cuIcon-loading2 cuIconfont-spin margin-right-sm"></text>
+							{{vCodeShow}}秒重新获取</button>
 
 					</view>
 
@@ -230,22 +231,33 @@
 
 			// 验证输入框的合法性
 			verification() {
-				if (this.username.length > 20 || this.username.length == 0) {
+				if (this.loginname.length < 1 || this.loginname.length < 50) {
 					this.$refs.uToast.show({
 						title: '用户名不合法',
 						type: 'error',
 					})
 					return false
 				}
-				if (this.psd1.length > 20 || this.psd1.length == 0) {
+				var regEmail =
+					/^(\w+((-\w+)|(\.\w+))*)\+\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
+				if (!regEmail.test(this.email)) {
 					this.$refs.uToast.show({
-						title: '密码不合法',
+						title: '邮箱格式不合法',
+						type: 'error',
+					})
+					return false
+				}
+				var regPsd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/
+				if (!regPsd.test(this.psd1)) {
+					this.$refs.uToast.show({
+						title: '请输入(6-16位)数字和字母组合',
 						type: 'error',
 					})
 					return false
 				}
 				return true
 			}
+
 		}
 	};
 </script>

@@ -30,7 +30,7 @@
 					<view class="cu-item padding myBorder" v-if="isDetail  && index==nowID">
 						<view class="cf align-center ">
 							<view class="margin text-black text-bold text-xl fl" @click="fileDetail" :id="index">
-								<text class="cuIcon-title text-blue"></text> {{item.orderName}}（{{item.departNum}} 人）
+								<text class="cuIcon-title text-blue"></text> {{item.dept_name}}（{{item.dept_number}} 人）
 							</view>
 							<view class="margin text-black text-bold text-lg text-right cuIcon-fold fr"
 								@click="hideDetail" :id="index">
@@ -38,7 +38,7 @@
 						</view>
 						<!-- 详情内容 -->
 						<view class="margin">
-							{{item.departContent}}
+							{{item.depart_detail}}
 						</view>
 					</view>
 
@@ -46,13 +46,13 @@
 					<!-- 简单视图 -->
 					<view class="cu-item padding cf align-center card-myBorder" v-else>
 						<view class="margin text-white text-bold text-xl fl" @click="fileDetail" :id="index">
-							{{item.orderName}}
+							{{item.dept_name}}
 						</view>
 						<view class="margin text-black text-bold text-lg text-right cuIcon-unfold fr"
 							@click="showDetail" :id="index">
 						</view>
 						<view class="margin cu-tag bg-blue light round fr">
-							{{item.departNum}} 人
+							{{item.dept_number}} 人
 						</view>
 					</view>
 
@@ -104,14 +104,15 @@
 			// 异步加载预约列表
 			getOrderList() {
 				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						title: '加载中'
+					})
 					uni.request({
-						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getOrderList",
-						method: "GET",
-						data: {
-							"coachID": "Beibei123",
-						},
+						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getDept",
+						method: "POST",
 						success: (res) => {
-							resolve(res.data.data.orderList)
+							uni.hideLoading()
+							resolve(res.data.data.deptList)
 						},
 						fail: (err) => {
 							reject(err)
