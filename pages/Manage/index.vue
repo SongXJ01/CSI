@@ -125,13 +125,14 @@
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
 					uni.showLoading({
-						
+						title: '加载中'
 					})
 					uni.request({
 						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
 						// url: this.$store.state.apiPath + "/employee/query2",
 						method: "POST",
 						success: (res) => {
+							uni.hideLoading()
 							console.log(res.data.data)
 							var noticeList = res.data.data.notice
 							resolve(noticeList)
@@ -171,7 +172,7 @@
 			// 切换账号
 			SwitchAccount() {
 				uni.navigateTo({
-					url:"../index/login"
+					url: "../index/login"
 				})
 				this.$store.dispatch('user/reset')
 			},

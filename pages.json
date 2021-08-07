@@ -120,6 +120,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/CommonUser/DeptStaff",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"backgroundColor": "#ffffff",

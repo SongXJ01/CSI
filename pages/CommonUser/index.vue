@@ -116,11 +116,15 @@
 			// 异步加载公告列表
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						title: '加载中'
+					})
 					uni.request({
 						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
 						// url: this.$store.state.apiPath + "/employee/query2",
 						method: "POST",
 						success: (res) => {
+							uni.hideLoading()
 							console.log(res.data.data)
 							var noticeList = res.data.data.notice
 							resolve(noticeList)
@@ -138,6 +142,9 @@
 					count: 1,
 					success: (res) => {
 						const tempFilePaths = res.tempFilePaths;
+						uni.showLoading({
+							title: '上传中'
+						})
 						uni.uploadFile({
 							url: this.$store.state.apiPath + "/user/photoUpload",
 							filePath: tempFilePaths[0],
@@ -147,6 +154,7 @@
 								'email': this.user.email
 							},
 							success: (res) => {
+								uni.hideLoading()
 								var res = JSON.parse(res.data)
 								console.log(res)
 								this.avatar = res.data.photo

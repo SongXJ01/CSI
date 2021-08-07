@@ -19,7 +19,7 @@
 
 		<view class="padding text-center margin-top" v-if="departList.length<=0">
 			<view class="padding card-myBorder">
-				<view class="padding text-lg">（暂无部门数据）</view>
+				<view class="padding text-lg text-white">（暂无部门数据）</view>
 			</view>
 		</view>
 
@@ -29,7 +29,7 @@
 					<!-- 详情视图 -->
 					<view class="cu-item padding myBorder" v-if="isDetail  && index==nowID">
 						<view class="cf align-center ">
-							<view class="margin text-black text-bold text-xl fl" @click="fileDetail" :id="index">
+							<view class="margin text-black text-bold text-xl fl" @click="deptStaff(item.dept_name)" :id="index">
 								<text class="cuIcon-title text-blue"></text> {{item.dept_name}}（{{item.dept_number}} 人）
 							</view>
 							<view class="margin text-black text-bold text-lg text-right cuIcon-fold fr"
@@ -45,7 +45,7 @@
 
 					<!-- 简单视图 -->
 					<view class="cu-item padding cf align-center card-myBorder" v-else>
-						<view class="margin text-white text-bold text-xl fl" @click="fileDetail" :id="index">
+						<view class="margin text-white text-bold text-xl fl" @click="deptStaff(item.dept_name)" :id="index">
 							{{item.dept_name}}
 						</view>
 						<view class="margin text-black text-bold text-lg text-right cuIcon-unfold fr"
@@ -87,6 +87,12 @@
 			console.log('触底加载数据')
 		},
 		methods: {
+			// 显示该部门的员工
+			deptStaff(dept_name){
+				uni.navigateTo({
+					url:"DeptStaff?dept_name="+dept_name
+				})
+			},
 
 			// 展示部门详情视图
 			showDetail: function(event) {
