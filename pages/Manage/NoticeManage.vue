@@ -111,6 +111,7 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
+			this.pageNum = 1
 			console.log("触发下拉刷新")
 			this.getNoticeList().then(res => {
 				this.NoticeList = res

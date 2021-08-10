@@ -5,7 +5,6 @@
 		<view class="fixed">
 			<cu-custom :isBack="true" bgColor="text-white">
 				<block slot="backText">返回</block>
-				<block slot="content">修改密码</block>
 			</cu-custom>
 		</view>
 		<!-- 顶部图片 -->

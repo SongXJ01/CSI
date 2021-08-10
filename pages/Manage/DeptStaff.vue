@@ -5,7 +5,7 @@
 		<view class="fixed">
 			<cu-custom :isBack="true" bgColor="text-white">
 				<block slot="backText">返回</block>
-				<block slot="content">员工管理</block>
+				<block slot="content">{{dept_name}}</block>
 			</cu-custom>
 		</view>
 		<!-- 顶部图片 -->
@@ -14,49 +14,33 @@
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
 
-
-		<!-- 筛选框 -->
-		<view class=" flex margin-sm align-center">
-			<u-input class="margin-sm" v-model="searchStaff" placeholder="员工名" type="text" :border="true" />
-			<u-input class="margin-sm" v-model="searchDepart" placeholder="部门名" type="text" :border="true" />
-			<button class="padding cu-btn round bg-gradual-blue shadow margin-tb" @click="queryStaff()">筛选</button>
-		</view>
-
-
 		<!-- 员工列表 -->
-		<view class="padding-sm ">
+		<view class="padding-sm" v-if="StaffList.length>0">
 			<view class="cu-list menu sm-border card-menu margin-lr myBorder">
-				<!-- 列表头 -->
 				<view class="cu-item">
 					<view>
 						<text class="cuIcon-circlefill text-red margin-sm"> </text>
 						<text class="text-bold">员工列表</text>
-						<text @click="addStaff()"
-							class="text-bold cuIcon-add cu-tag text-green bg-green light round padding-sm margin-left-sm"></text>
-					</view>
-					<view class="cu-tag round light bg-white" @click="change_isEdit" v-if="!isEdit">
-						<view class="cuIcon-moreandroid text-bold text-blue margin-right-sm"></view>
-					</view>
-					<view class="cu-tag round light bg-red" @click="change_isEdit" v-else>
-						<view class="cuIcon-close text-red margin-right-sm"></view> 删除
 					</view>
 				</view>
-				<!-- 列表体 -->
+
 				<view class="cu-item arrow" v-for="(item,index) in StaffList" v-bind:key="item.id">
 					<view class="align-center cf">
-						<checkbox class="margin-right-sm" :class="item.checked?'checked':''"
-							:checked="item.checked?true:false" v-if="isEdit" @tap="CheckboxChange(item)">
-						</checkbox>
-						<text class="margin-right-sm cuIcon-title text-blue" v-else></text>
-						<text class="text-grey" @click="showDetail(item)">{{item.emp_name}}</text>
+						<text class="margin-right-sm cuIcon-title text-blue"></text>
+						<text class="text-grey" @click="showDetail(item)" :id="index">{{item.emp_name}}</text>
 						<text
 							:class="'margin-left-xl cu-tag light round text-sm fr bg-'+colorList[item.dept_id]">{{item.dept_name}}</text>
 					</view>
 				</view>
+				-
 			</view>
 		</view>
-		<view class="bottom-text" v-if="pageNum >= allPages">
-			<text>已经到底了~</text>
+		
+		
+		<view class="padding text-center margin-top" v-else>
+			<view class="padding card-myBorder">
+				<view class="padding text-lg text-white">（部门暂无员工）</view>
+			</view>
 		</view>
 
 		<!-- 模态框 -->
@@ -89,9 +73,6 @@
 					</view>
 				</view>
 
-				<button class="padding cu-btn round line-orange shadow margin-bottom"
-					@click="updateStaff()">修改员工信息</button>
-
 			</view>
 		</view>
 
@@ -99,50 +80,32 @@
 		<view class='cu-tabbar-height'></view>
 		<view class='cu-tabbar-height'></view>
 		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
+		<view class='cu-tabbar-height'></view>
 	</view>
 </template>
 
 <script>
-	// 导入 VueX
-	import {
-		mapState,
-		mapActions
-	} from 'vuex'
 	export default {
-		// VueX 连接 staff
-		computed: mapState({
-			staff: state => state.staff
-		}),
 		data() {
 			return {
 				colorList: this.$store.state.colorList, // 颜色列表
-				StaffList: [], // 员工列表
+				dept_name: '', // 部门名称
+				StaffList: '', // 员工列表
 				modalName: '', // 模态框
 				nowStaff: '', // 展开详情的staff
 				searchStaff: '', // 查询条件
 				searchDepart: '', // 查询条件
-				isEdit: false, // 是否编辑
 				// 分页查询
 				pageNum: 1,
 				pageSize: 10,
-				allPages: 10000, // 总页数
 			}
 		},
-		onShow() {
+		onLoad(options) {
+			this.dept_name = options.dept_name
 			this.getStaffList().then(res => {
 				this.StaffList = res
 			})
-		},
-		// 下拉刷新
-		onPullDownRefresh() {
-			this.pageNum = 1
-			console.log("触发下拉刷新")
-			this.getStaffList().then(res => {
-				this.StaffList = res
-			})
-			setTimeout(function() {
-				uni.stopPullDownRefresh();
-			}, 1000);
 		},
 		// 触底事件
 		onReachBottom() {
@@ -153,77 +116,31 @@
 			})
 		},
 		methods: {
-			// 加载员工列表
+
+			// 异步加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
-					if (this.pageNum < this.allPages) {
-						uni.showLoading({
-							title: '加载中'
-						})
-						uni.request({
-							url: this.$store.state.apiPath + "/employee/queryByIdAndDept",
-							method: "POST",
-							data: {
-								"pageNum": this.pageNum,
-								"pageSize": this.pageSize,
-								"emp_name": this.searchStaff,
-								"dept_name": this.searchDepart
-							},
-							success: (res) => {
-								this.allPages = res.data.allPages
-								var staffList = res.data.employees
-								staffList.forEach(item => {
-									item.checked = false
-								})
-								uni.hideLoading()
-								resolve(staffList)
-							},
-							fail: (err) => {
-								reject(err)
-							}
-						})
-					}
-				})
-			},
-
-			// 删除员工
-			delStaff() {
-				this.pageNum = 1
-				var delList = []
-				this.StaffList.forEach(item => {
-					if (item.checked) {
-						delList.push(item.emp_id)
-					}
-				})
-				console.log(delList)
-				uni.request({
-					url: this.$store.state.apiPath + "/employee/delete",
-					method: "POST",
-					data: {
-						"list": delList
-					},
-					success: (res) => {
-						console.log(res)
-						uni.hideLoading()
-						this.getStaffList().then(res => {
-							this.StaffList = res
-						})
-					},
-				})
-			},
-
-			// 修改员工信息
-			updateStaff() {
-				this.hideDetail()
-				uni.navigateTo({
-					url: 'StaffDetail'
-				})
-			},
-
-			// 添加员工信息
-			addStaff() {
-				uni.navigateTo({
-					url: 'StaffAdd'
+					uni.showLoading({
+						title: '加载中'
+					})
+					uni.request({
+						url: this.$store.state.apiPath + "/employee/query2",
+						method: "POST",
+						data: {
+							"pageNum": this.pageNum,
+							"pageSize": this.pageSize,
+							"emp_name": this.searchStaff,
+							"dept_name": this.dept_name
+						},
+						success: (res) => {
+							var staffList = res.data.employees
+							uni.hideLoading()
+							resolve(staffList)
+						},
+						fail: (err) => {
+							reject(err)
+						}
+					})
 				})
 			},
 
@@ -235,27 +152,12 @@
 				})
 			},
 
-			// 复选框
-			CheckboxChange(item) {
-				item.checked = !item.checked
-			},
-
-			// 切换编辑状态
-			change_isEdit() {
-				if (this.isEdit) {
-					this.delStaff()
-				}
-				this.isEdit = !this.isEdit
-			},
-
 			// 展示详情
 			showDetail(item) {
 				console.log("展示详情视图: ", item.emp_name)
 				this.nowStaff = item
-				this.$store.dispatch('staff/Cache', item)
 				this.modalName = "modelDetail"
 			},
-
 			// 隐藏模态框
 			hideDetail() {
 				console.log("隐藏详情视图")
