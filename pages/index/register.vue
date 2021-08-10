@@ -204,10 +204,10 @@
 							console.log("请求 register 接口成功", res)
 							if (res.data.desc == "注册成功") {
 								// 更新全局变量
-								this.user.loginname = res.data.data.loginname
-								this.user.email = res.data.data.email
-								this.user.status = res.data.data.status
-								this.user.username = res.data.data.username
+								this.user.loginname = this.loginname
+								this.user.email = this.email
+								this.user.status = this.status
+								this.user.username = this.username
 								this.$refs.uToast.show({
 									title: '注册成功',
 									type: 'success',
@@ -231,15 +231,14 @@
 
 			// 验证输入框的合法性
 			verification() {
-				if (this.loginname.length < 1 || this.loginname.length < 50) {
+				if (this.loginname.length > 20 || this.loginname.length == 0) {
 					this.$refs.uToast.show({
 						title: '用户名不合法',
 						type: 'error',
 					})
 					return false
 				}
-				var regEmail =
-					/^(\w+((-\w+)|(\.\w+))*)\+\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
+				var regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
 				if (!regEmail.test(this.email)) {
 					this.$refs.uToast.show({
 						title: '邮箱格式不合法',

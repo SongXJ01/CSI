@@ -20,7 +20,7 @@
 			<view class="cu-form-group">
 				<view class="title"><text class="cuIcon-peoplefill text-green margin-right-sm"></text>姓名：</view>
 				<input v-model="nowStaff.emp_name" placeholder="(请填写姓名)" type="text"></input>
-			
+
 			</view>
 			<view class="cu-form-group">
 				<!-- 性别选择 -->
@@ -61,7 +61,7 @@
 			</view>
 		</view>
 		<view class="text-center">
-			<button class="padding cu-btn round line-orange shadow margin" @click="updateStaffSubmit()">确认添加</button>
+			<button class="padding cu-btn round line-orange shadow margin" @click="addStaffSubmit()">确认添加</button>
 		</view>
 
 		<!-- 消息提示框 -->
@@ -111,15 +111,102 @@
 				this.nowStaff.dept_name = this.deptPicker[e.detail.value]
 			},
 
-			// 提交员工修改信息
-			updateStaffSubmit() {
+			// 提交员工添加信息
+			addStaffSubmit() {
+				if (this.verification()) {
+					uni.showLoading({
+						title: '添加中'
+					})
+					uni.request({
+						url: this.$store.state.apiPath + "/employee/insert",
+						method: "POST",
+						data: {
+							dept_id: 1,
+							dept_name: this.nowStaff.dept_name,
+							emp_name: this.nowStaff.emp_name,
+							sex: this.nowStaff.sex,
+							phone: this.nowStaff.phone,
+							address: this.nowStaff.address,
+							email: this.nowStaff.email,
+							education: this.nowStaff.education,
+							speciality: this.nowStaff.speciality
+						},
+						success: (res) => {
+							console.log(res)
+							uni.hideLoading()
+							this.resetStaff()
+							this.$refs.uToast.show({
+								title: '添加成功',
+								type: 'success',
+							})
+							setTimeout(() => {
+								uni.navigateBack()
+							}, 1000)
+						},
+					})
+				}
+			},
 
+			// 重置员工信息
+			resetStaff() {
+				this.nowStaff.dept_id = ''
+				this.nowStaff.dept_name = ''
+				this.nowStaff.emp_name = ''
+				this.nowStaff.sex = ''
+				this.nowStaff.phone = ''
+				this.nowStaff.address = ''
+				this.nowStaff.email = ''
+				this.nowStaff.education = ''
+				this.nowStaff.speciality = ''
 			},
 
 			// 选中任一radio时，由radio-group触发
 			radioGroupChange(e) {
-				console.log("修改性别：",this.nowStaff.sex);
+				console.log("修改性别：", this.nowStaff.sex);
 			},
+
+			// 验证输入框的合法性
+			verification() {
+				if (this.nowStaff.address < 1 || this.nowStaff.address > 100) {
+					this.$refs.uToast.show({
+						title: '请正确填写地址',
+						type: 'error',
+					})
+					return false
+				}
+				if (this.nowStaff.emp_name < 1 || this.nowStaff.emp_name > 50) {
+					this.$refs.uToast.show({
+						title: '请正确填写姓名',
+						type: 'error',
+					})
+					return false
+				}
+				if (this.nowStaff.education < 1 || this.nowStaff.education > 50) {
+					this.$refs.uToast.show({
+						title: '请正确填写学历',
+						type: 'error',
+					})
+					return false
+				}
+				var regEmail =/^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+				if (!regEmail.test(this.nowStaff.email)) {
+					console.log(this.nowStaff.email)
+					this.$refs.uToast.show({
+						title: '请正确填写邮箱',
+						type: 'error',
+					})
+					return false
+				}
+				var regPhone = /^1[3456789]d{9}$/
+				if (!regPhone.test(this.nowStaff.phone)) {
+					this.$refs.uToast.show({
+						title: '请填写11位电话号码',
+						type: 'error',
+					})
+					return false
+				}
+				return true
+			}
 		}
 	}
 </script>

@@ -1,9 +1,9 @@
 const state = () => ({
 	email: "", // 用户邮箱
 	loginname: "SongXJ", // 用户登录时的用户名
-	password: "string", // 用户密码
+	password: "", // 用户密码
 	status: 0, // 用户身份权限  0-普通用户  1-管理员
-	username: "string", // 姓名
+	username: "", // 姓名
 	photo: '', // 头像
 })
 
@@ -16,9 +16,9 @@ const actions = {
 		console.log("用户信息已清除")
 		state.email = "" // 用户邮箱
 		state.loginname = "SongXJ" // 用户登录时的用户名
-		state.password = "string" // 用户密码
+		state.password = "" // 用户密码
 		state.status = 0 // 用户身份权限  0-普通用户  1-管理员
-		state.username = "string" // 姓名
+		state.username = "" // 姓名
 		state.photo = '' // 头像
 	}
 }

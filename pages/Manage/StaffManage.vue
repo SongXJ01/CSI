@@ -53,8 +53,10 @@
 							:class="'margin-left-xl cu-tag light round text-sm fr bg-'+colorList[item.dept_id]">{{item.dept_name}}</text>
 					</view>
 				</view>
-
 			</view>
+		</view>
+		<view class="bottom-text" v-if="pageNum >= allPages">
+			<text>已经到底了~</text>
 		</view>
 
 		<!-- 模态框 -->
@@ -114,7 +116,7 @@
 		data() {
 			return {
 				colorList: this.$store.state.colorList, // 颜色列表
-				StaffList: '', // 员工列表
+				StaffList: [], // 员工列表
 				modalName: '', // 模态框
 				nowStaff: '', // 展开详情的staff
 				searchStaff: '', // 查询条件
@@ -123,12 +125,23 @@
 				// 分页查询
 				pageNum: 1,
 				pageSize: 10,
+				allPages: 10000, // 总页数
 			}
 		},
-		onLoad() {
+		onShow() {
 			this.getStaffList().then(res => {
 				this.StaffList = res
 			})
+		},
+		// 下拉刷新
+		onPullDownRefresh() {
+			console.log("触发下拉刷新")
+			this.getStaffList().then(res => {
+				this.StaffList = res
+			})
+			setTimeout(function() {
+				uni.stopPullDownRefresh();
+			}, 1000);
 		},
 		// 触底事件
 		onReachBottom() {
@@ -139,33 +152,61 @@
 			})
 		},
 		methods: {
-			// 异步加载员工列表
+			// 加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
-					uni.showLoading({
-						title: '加载中'
-					})
-					uni.request({
-						url: this.$store.state.apiPath + "/employee/query2",
-						method: "POST",
-						data: {
-							"pageNum": this.pageNum,
-							"pageSize": this.pageSize,
-							"emp_name": this.searchStaff,
-							"dept_name": this.searchDepart
-						},
-						success: (res) => {
-							var staffList = res.data.employees
-							staffList.forEach(item => {
-								item.checked = false
-							})
-							uni.hideLoading()
-							resolve(staffList)
-						},
-						fail: (err) => {
-							reject(err)
-						}
-					})
+					if (this.pageNum < this.allPages) {
+						uni.showLoading({
+							title: '加载中'
+						})
+						uni.request({
+							url: this.$store.state.apiPath + "/employee/queryByIdAndDept",
+							method: "POST",
+							data: {
+								"pageNum": this.pageNum,
+								"pageSize": this.pageSize,
+								"emp_name": this.searchStaff,
+								"dept_name": this.searchDepart
+							},
+							success: (res) => {
+								this.allPages = res.data.allPages
+								var staffList = res.data.employees
+								staffList.forEach(item => {
+									item.checked = false
+								})
+								uni.hideLoading()
+								resolve(staffList)
+							},
+							fail: (err) => {
+								reject(err)
+							}
+						})
+					}
+				})
+			},
+
+			// 删除员工
+			delStaff() {
+				var delList = []
+				this.StaffList.forEach(item => {
+					if (item.checked) {
+						delList.push(item.emp_id)
+					}
+				})
+				console.log(delList)
+				uni.request({
+					url: this.$store.state.apiPath + "/employee/delete",
+					method: "POST",
+					data: {
+						"list": delList
+					},
+					success: (res) => {
+						console.log(res)
+						uni.hideLoading()
+						this.getStaffList().then(res => {
+							this.StaffList = res
+						})
+					},
 				})
 			},
 
@@ -176,9 +217,9 @@
 					url: 'StaffDetail'
 				})
 			},
-			
+
 			// 添加员工信息
-			addStaff(){
+			addStaff() {
 				uni.navigateTo({
 					url: 'StaffAdd'
 				})
@@ -199,6 +240,9 @@
 
 			// 切换编辑状态
 			change_isEdit() {
+				if(this.isEdit){
+					this.delStaff()
+				}
 				this.isEdit = !this.isEdit
 			},
 

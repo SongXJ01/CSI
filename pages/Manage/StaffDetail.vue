@@ -112,12 +112,89 @@
 
 			// 提交员工修改信息
 			updateStaffSubmit() {
+				if (this.verification()) {
+					uni.showLoading({
+						title: '添加中'
+					})
+					uni.request({
+						url: this.$store.state.apiPath + "/employee/update",
+						method: "POST",
+						data: {
+							dept_id: 1,
+							dept_name: this.nowStaff.dept_name,
+							emp_id: this.nowStaff.emp_id,
+							emp_name: this.nowStaff.emp_name,
+							sex: this.nowStaff.sex,
+							phone: this.nowStaff.phone,
+							address: this.nowStaff.address,
+							email: this.nowStaff.email,
+							education: this.nowStaff.education,
+							speciality: this.nowStaff.speciality
+						},
+						success: (res) => {
+							console.log(res)
+							uni.hideLoading()
+							this.$refs.uToast.show({
+								title: '修改成功',
+								type: 'success',
+							})
+							setTimeout(() => {
+								uni.navigateTo({
+									url: "StaffManage"
+								})
+							}, 500)
+						},
+					})
+				}
+			},
 
+			// 验证输入框的合法性
+			verification() {
+				if (this.nowStaff.address < 1 || this.nowStaff.address > 100) {
+					this.$refs.uToast.show({
+						title: '请正确填写地址',
+						type: 'error',
+					})
+					return false
+				}
+				if (this.nowStaff.emp_name < 1 || this.nowStaff.emp_name > 50) {
+					this.$refs.uToast.show({
+						title: '请正确填写姓名',
+						type: 'error',
+					})
+					return false
+				}
+				if (this.nowStaff.education < 1 || this.nowStaff.education > 50) {
+					this.$refs.uToast.show({
+						title: '请正确填写学历',
+						type: 'error',
+					})
+					return false
+				}
+				var regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+				if (!regEmail.test(this.nowStaff.email)) {
+					console.log(this.nowStaff.email)
+					this.$refs.uToast.show({
+						title: '请正确填写邮箱',
+						type: 'error',
+					})
+					return false
+				}
+				var regPhone = /^1[3456789]\d{9}$/
+				if (!regPhone.test(this.nowStaff.phone)) {
+					console.log(this.nowStaff.phone)
+					this.$refs.uToast.show({
+						title: '请填写11位电话号码',
+						type: 'error',
+					})
+					return false
+				}
+				return true
 			},
 
 			// 选中任一radio时，由radio-group触发
 			radioGroupChange(e) {
-				console.log("修改性别：",this.nowStaff.sex);
+				console.log("修改性别：", this.nowStaff.sex);
 			},
 		}
 	}

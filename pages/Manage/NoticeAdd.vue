@@ -30,6 +30,8 @@
 				<button class="padding cu-btn round line-green shadow margin" @click="noticeSubmit()">提 交</button>
 			</view>
 		</view>
+		<!-- 消息提示框 -->
+		<u-toast ref="uToast" />
 		<!-- 空隙行 -->
 		<view class='cu-tabbar-height'></view>
 		<view class='cu-tabbar-height'></view>
@@ -40,7 +42,17 @@
 </template>
 
 <script>
+	// 导入 VueX
+	import {
+		mapState,
+		mapActions
+	} from 'vuex'
+
 	export default {
+		// VueX 连接 user
+		computed: mapState({
+			user: state => state.user
+		}),
 		data() {
 			return {
 				title: '',
@@ -48,10 +60,40 @@
 		},
 		methods: {
 			// 提交公告内容
-			noticeSubmit(){
-				
+			noticeSubmit() {
+				uni.showLoading({
+					title: '添加中'
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/notice/insert",
+					method: "POST",
+					data: {
+						title: this.title,
+						content: this.textareaAValue,
+						loginname: this.user.loginname
+					},
+					success: (res) => {
+						this.resetNotice()
+						uni.hideLoading()
+						console.log(res)
+						this.$refs.uToast.show({
+							title: '添加成功',
+							type: 'success',
+						})
+						setTimeout(() => {
+							uni.navigateBack()
+						}, 1000)
+					},
+				})
 			},
 			
+			// 重置公告信息
+			resetNotice() {
+				this.title = ''
+				this.textareaAValue = ''
+			},
+			
+
 			// 动态更新公告内容
 			textareaInput(e) {
 				console.log(e.detail.value)

@@ -37,14 +37,14 @@
 		<!-- 公告轮播 -->
 		<swiper indicator-dots="true" indicator-color="rgb(255, 203, 129)" autoplay="true"
 			class="card-swiper square-dot">
-			<swiper-item v-for="(item,index) in noticeList" v-if="index<10">
+			<swiper-item v-for="(item,index) in noticeList" v-bind:key="item.id" v-if="index<10">
 				<view class="notice margin padding-lg ">
 					<view class="cf margin-bottom">
 						<text class="text-bold text-xl fl">公告：{{item.title}}</text>
 						<text class="text-right margin-left fr">By. {{item.loginname}}</text>
 					</view>
 					<view class="text-grey box-notice">{{item.content}}</view>
-					<view class="text-grey text-right margin-top">{{item.create_date}}</view>
+					<view class="text-grey text-right margin-top">{{item.create_date.split('T')[0]}}</view>
 				</view>
 			</swiper-item>
 		</swiper>
@@ -128,13 +128,17 @@
 						title: '加载中'
 					})
 					uni.request({
-						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
-						// url: this.$store.state.apiPath + "/employee/query2",
+						// url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
+						url: this.$store.state.apiPath + "/notice/queryAll",
 						method: "POST",
+						data: {
+							pageNum: 1,
+							pageSize: 10
+						},
 						success: (res) => {
 							uni.hideLoading()
-							console.log(res.data.data)
-							var noticeList = res.data.data.notice
+							console.log(res)
+							var noticeList = res.data.notices
 							resolve(noticeList)
 						},
 						fail: (err) => {
@@ -143,6 +147,7 @@
 					})
 				})
 			},
+
 
 			// 上传头像
 			ChooseImage() {

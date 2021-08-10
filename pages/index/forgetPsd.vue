@@ -222,8 +222,7 @@
 
 			// 验证输入框的合法性
 			verification() {
-				var regEmail =
-					/^(\w+((-\w+)|(\.\w+))*)\+\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
+				var regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
 				if (!regEmail.test(this.email)) {
 					this.$refs.uToast.show({
 						title: '邮箱格式不合法',

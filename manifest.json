@@ -73,9 +73,10 @@
     },
     "h5" : {
         "router" : {
-            "mode" : "history",
-            "base" : "/CSI/"
+            "mode" : "hash",
+            "base" : "./"
         },
-        "title" : "CSI 员工之家"
+        "title" : "CSI 员工之家",
+        "domain" : "songxj01.xyz"
     }
 }

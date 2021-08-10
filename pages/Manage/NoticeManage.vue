@@ -45,14 +45,19 @@
 						<text class="margin-right-sm cuIcon-title text-blue" v-else></text>
 						<text class="text-bold text-lg" @click="showDetail(item)">{{item.title}}</text>
 						<text class="text-grey"
-							@click="showDetail(item)">（{{item.loginname}}）-{{item.create_date}}</text>
+							@click="showDetail(item)">（{{item.loginname}}）-{{item.create_date.split('T')[0]}}</text>
 					</view>
 				</view>
 			</view>
 		</view>
 
+		<view class="bottom-text" v-if="pageNum >= allPages">
+			<text>已经到底了~</text>
+		</view>
+
+
 		<!-- 模态框 -->
-		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''" @tap="hideDetail()">
+		<view class="cu-modal show" v-if="modalName=='modelDetail'" @tap="hideDetail()">
 			<view class="cu-dialog bg-white">
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{nowNotice.title}} </view>
@@ -62,7 +67,7 @@
 				</view>
 				<view class="content">
 					<text class="margin-right">{{nowNotice.loginname}} </text>
-					<text class="margin-left">{{nowNotice.create_date}} </text>
+					<text class="margin-left">{{nowNotice.create_date.split('T')[0]}} </text>
 				</view>
 				<!-- 展示信息 -->
 				<scroll-view class="padding margin text-left noticeBorder notice-content">
@@ -70,7 +75,6 @@
 				</scroll-view>
 				<button class="padding cu-btn round line-orange shadow margin-bottom"
 					@click="updateNotice()">修改公告信息</button>
-
 			</view>
 		</view>
 
@@ -102,9 +106,21 @@
 				// 分页查询
 				pageNum: 1,
 				pageSize: 10,
+				allPages: 10000, // 总页数
 			}
 		},
-		onLoad() {
+		// 下拉刷新
+		onPullDownRefresh() {
+			console.log("触发下拉刷新")
+			this.getNoticeList().then(res => {
+				this.NoticeList = res
+			})
+			setTimeout(function() {
+				uni.stopPullDownRefresh();
+			}, 1000);
+		},
+		onShow() {
+			console.log("触发onShow")
 			this.getNoticeList().then(res => {
 				this.NoticeList = res
 			})
@@ -118,30 +134,63 @@
 			})
 		},
 		methods: {
-
-			// 异步加载公告列表
+			// 加载公告列表
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
-					uni.showLoading({
-						title: '加载中'
-					})
-					uni.request({
-						url: "https://www.fastmock.site/mock/e34be376320e67bcbff402db4095587c/api/getNotice",
-						// url: this.$store.state.apiPath + "/employee/query2",
-						method: "POST",
-						success: (res) => {
-							console.log(res.data.data)
-							var noticeList = res.data.data.notice
-							noticeList.forEach(item => {
-								item.checked = false
-							})
-							uni.hideLoading()
-							resolve(noticeList)
-						},
-						fail: (err) => {
-							reject(err)
-						}
-					})
+					if (this.pageNum < this.allPages) {
+						uni.showLoading({
+							title: '加载中'
+						})
+						uni.request({
+							url: this.$store.state.apiPath + "/notice/queryAll",
+							method: "POST",
+							data: {
+								pageNum: this.pageNum,
+								pageSize: this.pageSize
+							},
+							success: (res) => {
+								this.allPages = res.data.allPages
+								console.log(res)
+								var noticeList = res.data.notices
+								noticeList.forEach(item => {
+									item.checked = false
+								})
+								uni.hideLoading()
+								resolve(noticeList)
+							},
+							fail: (err) => {
+								reject(err)
+							}
+						})
+					}
+				})
+			},
+
+
+			// 删除公告
+			delNotice() {
+				this.pageNum = 1
+				var delList = []
+				var that = this
+				this.NoticeList.forEach(item => {
+					if (item.checked) {
+						delList.push(item.notice_id)
+					}
+				})
+				console.log(delList)
+				uni.request({
+					url: this.$store.state.apiPath + "/notice/delete",
+					method: "POST",
+					data: {
+						"list": delList
+					},
+					success: (res) => {
+						console.log(res)
+						this.getNoticeList().then(res => {
+							this.NoticeList = res
+						})
+						uni.hideLoading()
+					},
 				})
 			},
 
@@ -167,6 +216,9 @@
 
 			// 切换编辑状态
 			change_isEdit() {
+				if (this.isEdit) {
+					this.delNotice()
+				}
 				this.isEdit = !this.isEdit
 			},
 

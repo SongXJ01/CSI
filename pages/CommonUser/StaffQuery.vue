@@ -39,8 +39,10 @@
 							:class="'margin-left-xl cu-tag light round text-sm fr bg-'+colorList[item.dept_id]">{{item.dept_name}}</text>
 					</view>
 				</view>
-				-
 			</view>
+		</view>
+		<view class="bottom-text" v-if="pageNum >= allPages">
+			<text>已经到底了~</text>
 		</view>
 
 		<!-- 模态框 -->
@@ -58,7 +60,8 @@
 				<view class="padding margin text-left staffBorder">
 					<view class="margin-sm">
 						<text class="cuIcon-peoplefill text-orange margin-right-sm"></text>员工ID：{{nowStaff.emp_id}}<text
-							class='margin-left' :class="nowStaff.sex==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
+							class='margin-left'
+							:class="nowStaff.sex==0?'cuIcon-male text-blue':'cuIcon-female text-pink'"></text>
 					</view>
 					<view class="margin-sm"> <text
 							class="cuIcon-dianhua text-orange margin-right-sm"></text>电话：{{nowStaff.phone}}</view>
@@ -97,6 +100,7 @@
 				// 分页查询
 				pageNum: 1,
 				pageSize: 10,
+				allPages: 10000, // 总页数
 			}
 		},
 		onLoad() {
@@ -113,37 +117,40 @@
 			})
 		},
 		methods: {
-
 			// 异步加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
-					uni.showLoading({
-						title: '加载中'
-					})
-					uni.request({
-						url: this.$store.state.apiPath + "/employee/query2",
-						method: "POST",
-						data: {
-							"pageNum": this.pageNum,
-							"pageSize": this.pageSize,
-							"emp_name": this.searchStaff,
-							"dept_name": this.searchDepart
-						},
-						success: (res) => {
-							var staffList = res.data.employees
-							uni.hideLoading()
-							resolve(staffList)
-						},
-						fail: (err) => {
-							reject(err)
-						}
-					})
+					if (this.pageNum < this.allPages) {
+						uni.showLoading({
+							title: '加载中'
+						})
+						uni.request({
+							url: this.$store.state.apiPath + "/employee/queryByIdAndDept",
+							method: "POST",
+							data: {
+								"pageNum": this.pageNum,
+								"pageSize": this.pageSize,
+								"emp_name": this.searchStaff,
+								"dept_name": this.searchDepart
+							},
+							success: (res) => {
+								this.allPages = res.data.allPages
+								console.log(res)
+								var staffList = res.data.employees
+								uni.hideLoading()
+								resolve(staffList)
+							},
+							fail: (err) => {
+								reject(err)
+							}
+						})
+					}
 				})
 			},
 
 			// 筛选员工
 			queryStaff() {
-				this.pageNum = 1	// 页码数归零
+				this.pageNum = 1 // 页码数归零
 				this.getStaffList().then(res => {
 					this.StaffList = res
 				})
@@ -167,11 +174,11 @@
 </script>
 
 <style>
-/* 橘色圆角边框 */
-.staffBorder {
-	border-radius: 30rpx;
-	border-style: solid;
-	border-color: #f37b1d;
-	border-width: 1.5px;
-}
+	/* 橘色圆角边框 */
+	.staffBorder {
+		border-radius: 30rpx;
+		border-style: solid;
+		border-color: #f37b1d;
+		border-width: 1.5px;
+	}
 </style>
