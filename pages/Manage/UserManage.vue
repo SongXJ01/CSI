@@ -59,6 +59,35 @@
 			</view>
 		</view>
 
+
+		<!-- 已删除用户列表 -->
+		<view class="padding-sm ">
+			<view class="cu-list menu sm-border card-menu margin-lr myGreyBorder">
+				<!-- 列表头 -->
+				<view class="cu-item">
+					<view>
+						<text class="cuIcon-circlefill text-grey margin-sm"> </text>
+						<text class="text-bold text-grey">用户回收站</text>
+					</view>
+				</view>
+				<!-- 列表体 -->
+				<view class="cu-item arrow" v-for="(item,index) in RecycleList" v-bind:key="item.id">
+					<view class="align-center cf">
+						<view class="cu-avatar sm round" v-if="!item.photo">
+							<text class="cuIcon-people"></text>
+						</view>
+						<view v-else class="cu-avatar sm round"
+							:style="[{ backgroundImage:'url(' + 'data:image/jpeg;base64,'+ item.photo+ ')' }]">
+						</view>
+						<text class="text-bold text-lg margin-left" @click="showDetail(item)">{{item.username}} </text>
+						<text class="text-grey" @click="showDetail(item)"> （{{item.loginname}})</text>
+						<text class="margin-left cu-tag light round text-sm fr bg-orange"
+							v-if="item.status==1">管理员</text>
+					</view>
+				</view>
+			</view>
+		</view>
+
 		<view class="bottom-text">
 			<text>已经到底了~</text>
 		</view>
@@ -78,14 +107,23 @@
 					</view>
 				</view>
 				<!-- 展示信息 -->
-				<view class="padding margin text-left userBorder">
+				<view class="padding margin text-left " :class="nowUser.del==0?'userBorder':'myGreyBorder text-gray'">
 					<view class="margin-sm">
-						<text class="cuIcon-peoplefill text-orange margin-right-sm"></text>用户名：{{nowUser.loginname}}
+						<text class="cuIcon-peoplefill margin-right-sm"
+							:class="nowUser.del==0?'text-orange':'text-gray'"></text>
+						用户名：{{nowUser.loginname}}
 					</view>
-					<view class="margin-sm"> <text
-							class="cuIcon-newsfill text-orange margin-right-sm"></text>邮箱：{{nowUser.email}}</view>
+					<view class="margin-sm">
+						<text class="cuIcon-newsfill margin-right-sm"
+							:class="nowUser.del==0?'text-orange':'text-gray'"></text>
+						邮箱：{{nowUser.email}}
+					</view>
 				</view>
 
+				<button class="padding cu-btn round line-orange shadow margin-bottom" @click="updateUser()"
+					v-if="nowUser.del==0">修改用户信息</button>
+				<button class="padding cu-btn round line-green shadow margin-bottom" @click="withdrawDeleteUser()"
+					v-else>撤销删除</button>
 			</view>
 		</view>
 
@@ -111,6 +149,7 @@
 			return {
 				colorList: this.$store.state.colorList, // 颜色列表
 				UserList: '', // 用户列表
+				RecycleList: '', // 回收站用户列表
 				modalName: '', // 模态框
 				nowUser: '', // 展开详情
 				isEdit: false, // 是否编辑
@@ -122,21 +161,27 @@
 		// 下拉刷新
 		onPullDownRefresh() {
 			console.log("触发下拉刷新")
-			this.getUserList().then(res => {
-				this.UserList = res
-			})
+			this.refresh()
 			setTimeout(function() {
 				uni.stopPullDownRefresh();
 			}, 1000);
 		},
 		onShow() {
 			console.log("触发onShow")
-			this.getUserList().then(res => {
-				this.UserList = res
-			})
+			this.refresh()
 		},
 
 		methods: {
+			// 刷新
+			refresh() {
+				this.getUserList().then(res => {
+					this.UserList = res
+				})
+				this.getRecycleList().then(res => {
+					this.RecycleList = res
+				})
+			},
+
 			// 加载用户列表
 			getUserList() {
 				return new Promise((resolve, reject) => {
@@ -167,6 +212,29 @@
 				})
 			},
 
+			// 加载回收站用户列表
+			getRecycleList() {
+				return new Promise((resolve, reject) => {
+					uni.showLoading({
+						title: '加载中'
+					})
+					uni.request({
+						url: this.$store.state.apiPath + "/manageUser/queryDeleteUser",
+						method: "GET",
+						success: (res) => {
+							console.log(res)
+							var recycleList = res.data.data
+							uni.hideLoading()
+							resolve(recycleList)
+						},
+						fail: (err) => {
+							reject(err)
+						}
+					})
+				})
+			},
+
+
 			// 筛选用户
 			queryUser() {
 				this.getUserList().then(res => {
@@ -181,7 +249,9 @@
 				var that = this
 				this.UserList.forEach(item => {
 					if (item.checked) {
-						delList.push({"loginname":item.loginname})
+						delList.push({
+							"loginname": item.loginname
+						})
 					}
 				})
 				console.log("删除列表：", JSON.stringify(delList))
@@ -196,6 +266,26 @@
 						this.getUserList().then(res => {
 							this.UserList = res
 						})
+						uni.hideLoading()
+					},
+				})
+			},
+
+			// 撤销删除用户
+			withdrawDeleteUser() {
+				var withdrawList = []
+				withdrawList.push({
+					"loginname": this.nowUser.loginname
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/manageUser/withdrawDeleteUser",
+					method: "POST",
+					data: {
+						list: JSON.stringify(withdrawList)
+					},
+					success: (res) => {
+						console.log(res)
+						this.refresh()
 						uni.hideLoading()
 					},
 				})
@@ -228,11 +318,11 @@
 				this.nowUser = ''
 				this.modalName = ''
 			},
-			
+
 			// 返回
-			backIndex(){
+			backIndex() {
 				uni.navigateTo({
-					url:"index"
+					url: "index"
 				})
 			}
 

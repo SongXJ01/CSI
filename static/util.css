@@ -31,6 +31,13 @@
 }
 
 
+/* 灰色圆角边框 */
+.myGreyBorder {
+	border-radius: 30rpx;
+	border-style: solid;
+	border-color: #d8d8d8;
+	border-width: 2px;
+}
 
 /* 蓝色圆角边框 */
 .myBorder {
