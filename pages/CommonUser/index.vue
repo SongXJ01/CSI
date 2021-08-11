@@ -87,7 +87,6 @@
 			this.getNoticeList().then(res => {
 				this.noticeList = res
 			})
-			// console.log("(测试VueX连接) 用户名：", this.user.loginname) // 使用 store 中的 user
 			this.avatar = this.user.photo
 		},
 		data() {

@@ -59,7 +59,9 @@
 				</view>
 			</view>
 		</view>
-
+		<view class="bottom-text">
+			<text>已经到底了~</text>
+		</view>
 
 		<!-- 底部空白行 -->
 		<view class='cu-tabbar-height'></view>
