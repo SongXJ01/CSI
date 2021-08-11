@@ -94,7 +94,7 @@
 
 
 		<!-- 模态框 -->
-		<view class="cu-modal show" v-if="modalName=='modelDetail'" @tap="hideDetail()">
+		<view class="cu-modal show" v-if="modalName=='modelDetail'">
 			<view class="cu-dialog bg-white">
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{nowUser.username}}
@@ -107,7 +107,8 @@
 					</view>
 				</view>
 				<!-- 展示信息 -->
-				<view class="padding margin text-left " :class="nowUser.del==0?'userBorder':'myGreyBorder text-gray'">
+				<view class="padding margin text-left " @tap="hideDetail" v-if="!isUpdate"
+					:class="nowUser.del==0?'userBorder':'myGreyBorder text-gray'">
 					<view class="margin-sm">
 						<text class="cuIcon-peoplefill margin-right-sm"
 							:class="nowUser.del==0?'text-orange':'text-gray'"></text>
@@ -119,10 +120,46 @@
 						邮箱：{{nowUser.email}}
 					</view>
 				</view>
+				<!-- 修改信息 -->
+				<view class="padding margin text-left userBorder" v-else>
+					<view class="cu-form-group">
+						<view class="title"><text class="cuIcon-peoplefill margin-right-sm text-orange"></text>姓名
+						</view>
+						<u-input v-model="nowUser.username" placeholder="请输入用户名" type="text" :border="true" />
+					</view>
+					<view class="cu-form-group">
+						<view class="title"><text class="cuIcon-newsfill margin-right-sm text-orange"></text>密码
+						</view>
+						<u-input v-model="nowUser.password" placeholder="请输入密码" type='password' :border="true" />
+					</view>
+					<view class="cu-form-group">
+						<view class="title"><text class="cuIcon-repairfill margin-right-sm text-orange"></text>权限
+						</view>
+						<!-- 权限选择 -->
+						<u-radio-group v-model="nowUser.status" @change="radioGroupChange" class="margin-left-lg">
+							<u-radio v-for="(item, index) in statuslist" :key="index" :name="item.name"
+								:disabled="item.disabled">
+								<text>{{item.name==0?'用户':'管理员'}}</text>
+							</u-radio>
+						</u-radio-group>
+					</view>
+					<view class="cu-form-group">
+						<view class="title"><text class="cuIcon-emojiflashfill margin-right-sm text-orange"></text>点击修改头像
+						</view>
+						<view class="cu-avatar radius" v-if="nowUser.photo==''" @tap="ChooseImage">
+							<text class="cuIcon-people"></text>
+						</view>
+						<view v-else class="cu-avatar radius margin-left"
+							:style="[{ backgroundImage:'url(' + 'data:image/jpeg;base64,'+ nowUser.photo+ ')' }]" @tap="ChooseImage">
+						</view>
+					</view>
+				</view>
 
+				<button class="padding cu-btn round line-green shadow margin-bottom" @click="subUpdateUser()"
+					v-if="isUpdate">提交修改</button>
 				<button class="padding cu-btn round line-orange shadow margin-bottom" @click="updateUser()"
-					v-if="nowUser.del==0">修改用户信息</button>
-				<button class="padding cu-btn round line-green shadow margin-bottom" @click="withdrawDeleteUser()"
+					v-else-if="nowUser.del==0">修改用户信息</button>
+				<button class="padding cu-btn round line-olive shadow margin-bottom" @click="withdrawDeleteUser()"
 					v-else>撤销删除</button>
 			</view>
 		</view>
@@ -147,12 +184,22 @@
 		}),
 		data() {
 			return {
+				statuslist: [{
+						name: 0,
+						disabled: false
+					},
+					{
+						name: 1,
+						disabled: false
+					}
+				], // 性别列表
 				colorList: this.$store.state.colorList, // 颜色列表
 				UserList: '', // 用户列表
 				RecycleList: '', // 回收站用户列表
 				modalName: '', // 模态框
 				nowUser: '', // 展开详情
 				isEdit: false, // 是否编辑
+				isUpdate: false, // 是否修改用户信息
 				searchLoginname: '', // 查询条件
 				searchEmail: '', // 查询条件
 				sumUser: 0, // 用户总数
@@ -224,13 +271,71 @@
 						success: (res) => {
 							console.log(res)
 							var recycleList = res.data.data
-							uni.hideLoading()
+							// uni.hideLoading()
 							resolve(recycleList)
 						},
 						fail: (err) => {
 							reject(err)
 						}
 					})
+				})
+			},
+
+			// 修改用户信息
+			updateUser() {
+				this.isUpdate = true
+			},
+
+			// 提交用户修改
+			subUpdateUser() {
+				uni.showLoading({
+					title: '提交中'
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/manageUser/changeUser",
+					method: "POST",
+					data: {
+						email: this.nowUser.email,
+						loginname: this.nowUser.loginname,
+						status: this.nowUser.status,
+						username: this.nowUser.username,
+						password: this.nowUser.password,
+					},
+					success: (res) => {
+						console.log(res)
+						this.refresh()
+						uni.hideLoading()
+						this.hideDetail()
+					},
+				})
+			},
+			
+			// 上传头像
+			ChooseImage() {
+				uni.chooseImage({
+					count: 1,
+					success: (res) => {
+						const tempFilePaths = res.tempFilePaths;
+						uni.showLoading({
+							title: '上传中'
+						})
+						uni.uploadFile({
+							url: this.$store.state.apiPath + "/user/photoUpload",
+							filePath: tempFilePaths[0],
+							name: 'file',
+							formData: {
+								'loginname': this.nowUser.loginname,
+								'email': this.nowUser.email
+							},
+							success: (res) => {
+								var res = JSON.parse(res.data)
+								console.log(res)
+								uni.hideLoading()
+								this.nowUser.photo = res.data.photo
+			
+							}
+						})
+					}
 				})
 			},
 
@@ -263,9 +368,7 @@
 					},
 					success: (res) => {
 						console.log(res)
-						this.getUserList().then(res => {
-							this.UserList = res
-						})
+						this.refresh()
 						uni.hideLoading()
 					},
 				})
@@ -294,6 +397,11 @@
 			// 复选框
 			CheckboxChange(item) {
 				item.checked = !item.checked
+			},
+
+			// 选中任一radio时，由radio-group触发
+			radioGroupChange(e) {
+				console.log("修改权限：", this.nowUser.status);
 			},
 
 			// 切换编辑状态
