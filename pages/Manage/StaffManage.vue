@@ -59,7 +59,7 @@
 			<text>已经到底了~</text>
 		</view>
 
-		<!-- 模态框 -->
+		<!-- 信息模态框 -->
 		<view class="cu-modal" :class="modalName=='modelDetail'?'show':''" @tap="hideDetail()">
 			<view class="cu-dialog bg-white">
 				<view class="cu-bar bg-white justify-end">
@@ -91,6 +91,37 @@
 
 				<button class="padding cu-btn round line-orange shadow margin-bottom"
 					@click="updateStaff()">修改员工信息</button>
+			</view>
+		</view>
+
+
+		<!-- 删除模态框 -->
+		<view class="cu-modal" :class="modalName=='modelDel'?'show':''" @tap="hideDetail()">
+			<view class="cu-dialog bg-white">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">删除员工</view>
+					<view class="action" @tap="hideDetail">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<!-- 展示信息 -->
+				<view class="cu-list menu sm-border card-menu margin-lr">
+					<!-- 列表头 -->
+					<view class="cu-item">
+						<view>
+							<text class="cuIcon-question text-red margin-sm"> </text>
+							<text class="text-bold">确定要删除下列员工吗？</text>
+						</view>
+					</view>
+					<!-- 列表体 -->
+					<view class="cu-item" v-for="(item,index) in delNameList" v-bind:key="item.id">
+						<view class="align-center cf">
+							<text class="margin-right-sm margin-left cuIcon-title text-orange"></text>
+							<text class="text-grey" @click="showDetail(item)">{{item}}</text>
+						</view>
+					</view>
+				</view>
+				<button class="padding cu-btn round line-orange shadow margin-bottom" @click="delStaff()">确定删除</button>
 
 			</view>
 		</view>
@@ -126,6 +157,9 @@
 				pageNum: 1,
 				pageSize: 10,
 				allPages: 10000, // 总页数
+				// 删除缓存
+				delNameList: '',
+				delList: '',
 			}
 		},
 		onShow() {
@@ -205,21 +239,29 @@
 				})
 			},
 
-			// 删除员工
-			delStaff() {
-				this.pageNum = 1
+			// 删除员工预处理
+			proDel() {
+				var delNameList = []
 				var delList = []
 				this.StaffList.forEach(item => {
 					if (item.checked) {
+						delNameList.push(item.emp_name)
 						delList.push(item.emp_id)
 					}
 				})
-				console.log(delList)
+				this.delNameList = delNameList
+				this.delList = delList
+				this.modalName = "modelDel"
+			},
+
+			// 删除员工
+			delStaff() {
+				console.log(this.delList)
 				uni.request({
 					url: this.$store.state.apiPath + "/employee/delete",
 					method: "POST",
 					data: {
-						"list": delList
+						"list": this.delList
 					},
 					success: (res) => {
 						console.log(res)
@@ -257,7 +299,7 @@
 			// 切换编辑状态
 			change_isEdit() {
 				if (this.isEdit) {
-					this.delStaff()
+					this.proDel()
 				}
 				this.isEdit = !this.isEdit
 			},
