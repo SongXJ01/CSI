@@ -44,6 +44,7 @@
 						</checkbox>
 						<text class="margin-right-sm cuIcon-title text-blue" v-else></text>
 						<text class="text-bold text-lg" @click="showDetail(item)">{{item.title}}</text>
+						<text class="cuIcon-file text-blue text-xl padding-left-sm" v-if="item.isaccessory==1"></text>
 						<text class="text-grey"
 							@click="showDetail(item)">（{{item.loginname}}）-{{item.create_date.split('T')[0]}}</text>
 					</view>
@@ -72,6 +73,11 @@
 				<!-- 展示信息 -->
 				<scroll-view class="padding margin text-left noticeBorder notice-content">
 					<view class="margin-sm"> {{nowNotice.content}}</view>
+					<!-- 公告附件 -->
+					<view class="text-center">
+						<image class="accessory" :src="'data:image/jpeg;base64,'+ nowNotice.accessory" mode="aspectFill"
+							v-if="nowNotice.isaccessory==1"></image>
+					</view>
 				</scroll-view>
 				<button class="padding cu-btn round line-orange shadow margin-bottom"
 					@click="updateNotice()">修改公告信息</button>
@@ -121,6 +127,7 @@
 			}, 1000);
 		},
 		onShow() {
+			this.pageNum = 1
 			console.log("触发onShow")
 			this.getNoticeList().then(res => {
 				this.NoticeList = res
@@ -164,6 +171,28 @@
 							}
 						})
 					}
+				})
+			},
+
+			// 展示详情
+			showDetail(item) {
+				console.log("展示详情视图: ", item)
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/notice/queryById",
+					method: "POST",
+					data: {
+						notice_id: item.notice_id
+					},
+					success: (res) => {
+						console.log(res)
+						this.modalName = "modelDetail"
+						this.nowNotice = res.data.notice
+						this.$store.dispatch('notice/Cache', res.data.notice)
+						uni.hideLoading()
+					},
 				})
 			},
 
@@ -223,14 +252,6 @@
 				this.isEdit = !this.isEdit
 			},
 
-			// 展示详情
-			showDetail(item) {
-				console.log("展示详情视图: ", item)
-				this.nowNotice = item
-				this.$store.dispatch('notice/Cache', item)
-				this.modalName = "modelDetail"
-			},
-
 			// 隐藏模态框
 			hideDetail() {
 				console.log("隐藏详情视图")
@@ -243,6 +264,13 @@
 </script>
 
 <style>
+	.accessory {
+		height: 200rpx;
+		width: 200rpx;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
 	/* 橘色圆角边框 */
 	.noticeBorder {
 		border-radius: 30rpx;

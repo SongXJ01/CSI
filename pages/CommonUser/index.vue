@@ -41,9 +41,10 @@
 		<swiper indicator-dots="true" indicator-color="rgb(255, 203, 129)" autoplay="true"
 			class="card-swiper square-dot">
 			<swiper-item v-for="(item,index) in noticeList" v-bind:key="item.id" v-if="index<10">
-				<view class="notice margin padding-lg ">
+				<view class="notice margin padding-lg" @click="showDetail(item)">
 					<view class="cf margin-bottom">
 						<text class="text-bold text-xl fl">公告：{{item.title}}</text>
+						<text class="cuIcon-file text-blue text-xl padding-left-sm" v-if="item.isaccessory==1"></text>
 						<text class="text-right margin-left fr">By. {{item.loginname}}</text>
 					</view>
 					<view class="text-grey box-notice">{{item.content}}</view>
@@ -63,6 +64,34 @@
 				</view>
 			</view>
 		</view>
+
+
+
+		<!-- 模态框 -->
+		<view class="cu-modal show" v-if="modalName=='modelDetail'" @tap="hideDetail()">
+			<view class="cu-dialog bg-white">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">{{nowNotice.title}} </view>
+					<view class="action" @tap="hideDetail">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="content">
+					<text class="margin-right">{{nowNotice.loginname}} </text>
+					<text class="margin-left">{{nowNotice.create_date.split('T')[0]}} </text>
+				</view>
+				<!-- 展示信息 -->
+				<scroll-view class="padding margin text-left noticeBorder notice-content">
+					<view class="margin-sm"> {{nowNotice.content}}</view>
+					<!-- 公告附件 -->
+					<view class="text-center">
+						<image class="accessory" :src="'data:image/jpeg;base64,'+ nowNotice.accessory" mode="aspectFill"
+							v-if="nowNotice.isaccessory==1"></image>
+					</view>
+				</scroll-view>
+			</view>
+		</view>
+
 
 		<!-- 空隙行 -->
 		<view class='cu-tabbar-height'></view>
@@ -112,7 +141,7 @@
 		},
 
 		methods: {
-			// 异步加载公告列表
+			// 加载公告列表
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
 					uni.showLoading({
@@ -166,6 +195,36 @@
 					}
 				})
 			},
+			
+			// 展示公告详情
+			showDetail(item) {
+				console.log("展示详情视图: ", item)
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/notice/queryById",
+					method: "POST",
+					data: {
+						notice_id: item.notice_id
+					},
+					success: (res) => {
+						console.log(res)
+						this.modalName = "modelDetail"
+						this.nowNotice = res.data.notice
+						this.$store.dispatch('notice/Cache', res.data.notice)
+						uni.hideLoading()
+					},
+				})
+			},
+			
+			// 隐藏模态框
+			hideDetail() {
+				console.log("隐藏详情视图")
+				this.nowNotice = ''
+				this.modalName = ''
+			},
+			
 			// 切换账号
 			SwitchAccount() {
 				uni.navigateTo({
@@ -201,6 +260,32 @@
 	.box-notice {
 		width: 450rpx;
 		height: 60px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;
+	}
+	
+	.accessory {
+		height: 200rpx;
+		width: 200rpx;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	
+	/* 橘色圆角边框 */
+	.noticeBorder {
+		border-radius: 30rpx;
+		border-style: solid;
+		border-color: #f37b1d;
+		border-width: 1.5px;
+	}
+	
+	/* 公告内容 */
+	.notice-content {
+		width: 90%;
+		height: 400rpx;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: -webkit-box;

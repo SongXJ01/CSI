@@ -18,7 +18,7 @@
 		<view class="UCenter-bg">
 			<image src="/static/Logo.png" class="png" mode="widthFix"></image>
 			<view class="margin-top-sm">
-				<text>V 1.0.0</text>
+				<text>{{version}}</text>
 			</view>
 			<image src="/static/wave.gif" mode="scaleToFill" class="gif-wave"></image>
 		</view>
@@ -83,7 +83,8 @@
 			user: state => state.user
 		}),
 		onLoad() {
-			console.log("(测试VueX连接) 云存储路径：", this.$store.state.cloudPath)
+			this.version = this.$store.state.version
+			console.log("(测试VueX连接) 版本号：", this.$store.state.version)
 			console.log("(测试VueX连接) 用户名：", this.user.loginname) // 使用 store 中的 user
 		},
 		onHide() { // 页面隐藏消除定时器
