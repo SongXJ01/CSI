@@ -332,13 +332,11 @@
 								console.log(res)
 								uni.hideLoading()
 								this.nowUser.photo = res.data.photo
-			
 							}
 						})
 					}
 				})
 			},
-
 
 			// 筛选用户
 			queryUser() {
@@ -346,7 +344,6 @@
 					this.UserList = res
 				})
 			},
-
 
 			// 删除用户
 			delUser() {
@@ -433,7 +430,6 @@
 					url: "index"
 				})
 			}
-
 		}
 	}
 </script>

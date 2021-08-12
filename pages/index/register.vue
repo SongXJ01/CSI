@@ -84,8 +84,6 @@
 		}),
 		onLoad() {
 			this.version = this.$store.state.version
-			console.log("(测试VueX连接) 版本号：", this.$store.state.version)
-			console.log("(测试VueX连接) 用户名：", this.user.loginname) // 使用 store 中的 user
 		},
 		onHide() { // 页面隐藏消除定时器
 			if (this.timer) {

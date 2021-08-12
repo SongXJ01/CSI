@@ -24,7 +24,7 @@ export default new Vuex.Store({
 		colorList: ['orange', 'olive', 'blue', 'purple', 'cyan', 'mauve', 'yellow', 'red', 'green', 'pink',
 			'brown'
 		],
-		cloudPath: "https://cdn.jsdelivr.net/gh/SongXJ01/image-hosting/image/", // PicX 图床，GitHub 映射
+		// cloudPath: "https://cdn.jsdelivr.net/gh/SongXJ01/image-hosting/image/", // PicX 图床，GitHub 映射
 	},
 
 })
