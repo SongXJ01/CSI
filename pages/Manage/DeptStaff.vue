@@ -116,7 +116,6 @@
 			})
 		},
 		methods: {
-
 			// 异步加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {

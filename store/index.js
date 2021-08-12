@@ -17,7 +17,7 @@ export default new Vuex.Store({
 
 	// 全局变量
 	state: {
-		version: "V 1.5.0", // 版本号
+		version: "V 1.3.2", // 版本号
 		logged: true, // 登录状态
 		isHuman: false, // 真人验证
 		apiPath: "http://81.68.194.16:8080", // API 接口路径

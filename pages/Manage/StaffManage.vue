@@ -129,20 +129,11 @@
 			}
 		},
 		onShow() {
-			this.getStaffList().then(res => {
-				this.StaffList = res
-			})
+			this.refresh()
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
-			this.pageNum = 1
-			console.log("触发下拉刷新")
-			this.getStaffList().then(res => {
-				this.StaffList = res
-			})
-			setTimeout(function() {
-				uni.stopPullDownRefresh();
-			}, 1000);
+			this.refresh()
 		},
 		// 触底事件
 		onReachBottom() {
@@ -233,9 +224,7 @@
 					success: (res) => {
 						console.log(res)
 						uni.hideLoading()
-						this.getStaffList().then(res => {
-							this.StaffList = res
-						})
+						this.refresh()
 					},
 				})
 			},
@@ -257,10 +246,7 @@
 
 			// 筛选员工
 			queryStaff() {
-				this.pageNum = 1 // 页码数归零
-				this.getStaffList().then(res => {
-					this.StaffList = res
-				})
+				this.refresh()
 			},
 
 			// 复选框
