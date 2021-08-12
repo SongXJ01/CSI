@@ -157,10 +157,10 @@
 
 			// 选择图片
 			ChooseImage() {
-				uni.chooseFile({
+				uni.chooseImage({
 					count: 1, //默认9
-					// sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					// sourceType: ['album'], //从相册选择
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['album'], //从相册选择
 					success: (res) => {
 						console.log(res)
 						if (this.filePathList.length != 0) {

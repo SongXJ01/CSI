@@ -197,7 +197,7 @@
 					})
 					return false
 				}
-				var regPhone = /^1[3456789]d{9}$/
+				var regPhone = /^1[3456789]\d{9}$/
 				if (!regPhone.test(this.nowStaff.phone)) {
 					this.$refs.uToast.show({
 						title: '请填写11位电话号码',

@@ -257,7 +257,6 @@
 				}
 				return true
 			}
-
 		}
 	};
 </script>
