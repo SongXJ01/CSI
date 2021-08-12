@@ -117,21 +117,11 @@
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
-			this.pageNum = 1
-			console.log("触发下拉刷新")
-			this.getNoticeList().then(res => {
-				this.NoticeList = res
-			})
-			setTimeout(function() {
-				uni.stopPullDownRefresh();
-			}, 1000);
+			this.refresh()
 		},
 		onShow() {
-			this.pageNum = 1
 			console.log("触发onShow")
-			this.getNoticeList().then(res => {
-				this.NoticeList = res
-			})
+			this.refresh()
 		},
 		// 触底事件
 		onReachBottom() {
@@ -142,6 +132,33 @@
 			})
 		},
 		methods: {
+			// 刷新
+			refresh() {
+				this.pageNum = 1
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/notice/queryAll",
+					method: "POST",
+					data: {
+						pageNum: 1,
+						pageSize: this.pageSize
+					},
+					success: (res) => {
+						this.allPages = res.data.allPages
+						console.log("刷新成功", res)
+						var noticeList = res.data.notices
+						noticeList.forEach(item => {
+							item.checked = false
+						})
+						this.NoticeList = noticeList
+						uni.hideLoading()
+						uni.stopPullDownRefresh()
+					},
+				})
+			},
+
 			// 加载公告列表
 			getNoticeList() {
 				return new Promise((resolve, reject) => {
@@ -216,9 +233,7 @@
 					},
 					success: (res) => {
 						console.log(res)
-						this.getNoticeList().then(res => {
-							this.NoticeList = res
-						})
+						this.refresh()
 						uni.hideLoading()
 					},
 				})

@@ -153,6 +153,34 @@
 			})
 		},
 		methods: {
+			// 刷新
+			refresh() {
+				this.pageNum = 1
+				uni.showLoading({
+					title: '加载中'
+				})
+				uni.request({
+					url: this.$store.state.apiPath + "/employee/queryByIdAndDept",
+					method: "POST",
+					data: {
+						pageNum: 1,
+						pageSize: this.pageSize,
+						emp_name: this.searchStaff,
+						dept_name: this.searchDepart
+					},
+					success: (res) => {
+						this.allPages = res.data.allPages
+						var staffList = res.data.employees
+						staffList.forEach(item => {
+							item.checked = false
+						})
+						this.StaffList = staffList
+						uni.hideLoading()
+						uni.stopPullDownRefresh()
+					},
+				})
+			},
+
 			// 加载员工列表
 			getStaffList() {
 				return new Promise((resolve, reject) => {
