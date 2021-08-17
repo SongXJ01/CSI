@@ -77,8 +77,6 @@
 			user: state => state.user
 		}),
 		onLoad() {
-			console.log("(测试VueX连接) 云存储路径：", this.$store.state.cloudPath)
-			console.log("(测试VueX连接) 用户名：", this.user.loginname) // 使用 store 中的 user
 		},
 		onHide() { // 页面隐藏消除定时器
 			if (this.timer) {
@@ -192,10 +190,6 @@
 							console.log("请求 changePassword 接口成功", res)
 							if (res.data.desc == "修改密码成功") {
 								// 更新全局变量
-								this.user.loginname = res.data.data.loginname
-								this.user.email = res.data.data.email
-								this.user.status = res.data.data.status
-								this.user.username = res.data.data.username
 								this.$refs.uToast.show({
 									title: res.data.desc,
 									type: 'success',
